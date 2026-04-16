@@ -1,0 +1,606 @@
+<!DOCTYPE html><html lang="en"><head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Bashar Shaikhani">
+    <meta name="author" content="Bashar Shaikhani">
+    <meta name="description" content="Blog by Eng.Bashar Shaikhani">
+    <meta property="og:title" content="Eng.Bashar Shaikhani Blog">
+    <meta property="og:image" content="images/bg.jpg">
+    <title id="page-title">Blog Post</title>
+    <link rel="shortcut icon" href="images/icon.png">
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <link rel="apple-touch-icon" href="images/icon.png">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/plugins.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="js/blogs-data.js"></script>
+
+    <style>
+        .navbar .bord { border: none !important; }
+        .navbar .bg { background: none !important; backdrop-filter: none !important; }
+
+        /* ── Hero ── */
+        .proj-hero-wrap {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 80px;
+        }
+        .proj-hero-wrap img {
+            width: 100%;
+            display: block;
+            border-radius: 12px;
+            transform: scale(1.04);
+            transition: transform 1.2s cubic-bezier(.22,1,.36,1);
+        }
+        .proj-hero-wrap.revealed img { transform: scale(1); }
+        .proj-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.55) 100%);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        /* ── Breadcrumb ── */
+        .proj-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+        .proj-breadcrumb a { color: #aaa; text-decoration: none; transition: color .2s; }
+        .proj-breadcrumb a:hover { color: #28e98c; }
+        .proj-breadcrumb span { color: #fff; }
+
+        /* ── Fade-up ── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+        }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── Info card ── */
+        #sticky_item { position: sticky; top: 110px; }
+        .proj-info-card {
+            background: #0d0d0d;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.06);
+            box-shadow: 0 32px 80px rgba(0,0,0,.6);
+        }
+        .proj-info-card__bar {
+            height: 3px;
+            background: linear-gradient(90deg, #28e98c, #1be4af, #28e98c);
+            background-size: 200% 100%;
+            animation: bar-slide 3s linear infinite;
+        }
+        @keyframes bar-slide { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
+        .proj-info-card__head {
+            padding: 26px 28px 20px;
+            border-bottom: 1px solid rgba(255,255,255,.05);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .proj-info-card__avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #28e98c22, #28e98c55);
+            border: 1px solid rgba(40,233,140,.3);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .proj-info-card__avatar i { color: #28e98c; font-size: 16px; }
+        .proj-info-card__head-label { font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: #555; font-weight: 600; margin-bottom: 2px; }
+        .proj-info-card__head-title { font-size: 15px; color: #fff; font-weight: 600; }
+        .proj-info-card__body { padding: 8px 0; }
+        .proj-info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 18px 28px;
+            transition: background .2s;
+        }
+        .proj-info-row:hover { background: rgba(255,255,255,.02); }
+        .proj-info-row__icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.07);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .proj-info-row__icon i { font-size: 13px; color: #28e98c; }
+        .proj-info-row__label { font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; color: #444; font-weight: 600; margin-bottom: 5px; }
+        .proj-info-row__value { font-size: 14px; color: #ccc; line-height: 1.5; margin: 0; }
+        .proj-info-row__value a { color: #28e98c; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: gap .2s; }
+        .proj-info-row__value a::after { content: '↗'; font-size: 11px; }
+        .proj-info-row__value a:hover { gap: 9px; }
+        .proj-info-row + .proj-info-row { border-top: 1px solid rgba(255,255,255,.04); }
+        .proj-info-card__cta { padding: 20px 28px 26px; border-top: 1px solid rgba(255,255,255,.05); }
+        .proj-info-cta-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #28e98c, #1bc77a);
+            color: #0a0a0a;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            text-decoration: none;
+            transition: transform .25s, box-shadow .25s;
+            box-shadow: 0 8px 24px rgba(40,233,140,.25);
+        }
+        .proj-info-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(40,233,140,.4); color: #0a0a0a; }
+
+        /* ── Similar blogs ── */
+        .similar-section { padding: 80px 0 40px; border-top: 1px solid rgba(255,255,255,.06); margin-top: 80px; }
+        .similar-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #28e98c; font-weight: 600; margin-bottom: 10px; }
+        .similar-heading { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 40px; }
+        .similar-card {
+            display: block;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0d0d0d;
+            border: 1px solid rgba(255,255,255,.06);
+            text-decoration: none;
+            transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s, border-color .3s;
+            position: relative;
+        }
+        .similar-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,.6); border-color: rgba(40,233,140,.2); }
+        .similar-card__img { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; transition: transform .6s cubic-bezier(.22,1,.36,1); }
+        .similar-card:hover .similar-card__img { transform: scale(1.04); }
+        .similar-card__img-wrap { overflow: hidden; }
+        .similar-card__body { padding: 20px 22px 22px; }
+        .similar-card__cat { font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; color: #28e98c; font-weight: 600; margin-bottom: 8px; }
+        .similar-card__title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px; line-height: 1.4; }
+        .similar-card__date { font-size: 12px; color: #555; }
+        .similar-card__arrow {
+            position: absolute;
+            top: 16px; right: 16px;
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: rgba(0,0,0,.5);
+            border: 1px solid rgba(255,255,255,.1);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 12px;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity .25s, transform .25s, background .25s;
+        }
+        .similar-card:hover .similar-card__arrow { opacity: 1; transform: translateY(0); background: #28e98c; color: #111; border-color: #28e98c; }
+
+        /* ── Prev/Next ── */
+        .proj-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 22px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 60px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ccc;
+            text-decoration: none;
+            transition: all .3s;
+            white-space: nowrap;
+        }
+        .proj-nav-btn:hover { background: #28e98c; border-color: #28e98c; color: #111; transform: translateY(-2px); }
+
+        /* ── Read progress ── */
+        #read-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: linear-gradient(90deg, #28e98c, #1bc77a); z-index: 9999; transition: width .1s linear; box-shadow: 0 0 10px #28e98c88; }
+
+        /* ── Hire Me float ── */
+        .hire-me-float {
+            position: fixed; bottom: 36px; right: 28px; z-index: 9990;
+            display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #28e98c; color: #111; font-weight: 700; font-size: 13px;
+            letter-spacing: .5px; padding: 14px 22px; border-radius: 50px; text-decoration: none;
+            box-shadow: 0 8px 32px rgba(40,233,140,.35); transition: transform .25s, box-shadow .25s;
+        }
+        .hire-me-float:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 14px 40px rgba(40,233,140,.5); color: #111; }
+        .hire-pulse { position: absolute; top: -4px; right: -4px; width: 12px; height: 12px; border-radius: 50%; background: #ff4757; animation: pulse-ring 1.5s ease infinite; }
+        .hire-reply-badge { font-size: 10px; font-weight: 500; color: #1a5c3a; margin-top: 3px; letter-spacing: .3px; }
+        @keyframes pulse-ring { 0% { transform: scale(1); opacity: 1; } 70% { transform: scale(2.2); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
+
+        /* ── Tags ── */
+        .proj-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        .proj-tag { padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(40,233,140,.3); color: #28e98c; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+
+        /* ── Blog content area ── */
+        .blog-content-area {
+            font-size: 16px;
+            line-height: 1.85;
+            color: rgba(255,255,255,0.75);
+        }
+        .blog-content-area h2 { font-size: 26px; font-weight: 700; color: #fff; margin: 48px 0 20px; }
+        .blog-content-area h3 { font-size: 20px; font-weight: 600; color: #fff; margin: 36px 0 16px; }
+        .blog-content-area p { margin-bottom: 22px; }
+        .blog-content-area ul, .blog-content-area ol { margin: 0 0 22px 22px; }
+        .blog-content-area li { margin-bottom: 10px; }
+        .blog-content-area blockquote {
+            border-left: 3px solid #28e98c;
+            padding: 16px 24px;
+            margin: 32px 0;
+            background: rgba(40,233,140,0.05);
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            color: rgba(255,255,255,0.6);
+        }
+        .blog-content-area a { color: #28e98c; text-decoration: underline; }
+        .blog-content-area img { width: 100%; border-radius: 12px; margin: 24px 0; }
+
+        /* ── Read more CTA ── */
+        .blog-read-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #28e98c, #1bc77a);
+            color: #0a0a0a;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 50px;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: transform .25s, box-shadow .25s;
+            box-shadow: 0 8px 24px rgba(40,233,140,.25);
+        }
+        .blog-read-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(40,233,140,.4); color: #0a0a0a; }
+    </style>
+
+</head>
+<body>
+    <div id="read-progress"></div>
+
+    <a href="index.html#contact" class="hire-me-float">
+        <span class="hire-pulse"></span>
+        <span>Hire Me</span>
+        <span class="hire-reply-badge">Replies in ~2hrs</span>
+    </a>
+
+    <div class="loader-wrap">
+        <svg viewBox="0 0 1000 1000" preserveAspectRatio="none">
+            <path id="svg" d="M0,1005S175,995,500,995s500,5,500,5V0H0Z"></path>
+        </svg>
+        <div class="loader-wrap-heading">
+            <div class="load-text">
+                <span>L</span><span>o</span><span>a</span><span>d</span><span>i</span><span>n</span><span>g</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="cursor"></div>
+    <canvas id="trailCanvas"></canvas>
+
+    <nav class="navbar navbar-chang navbar-expand-lg">
+        <div class="container position-re">
+            <div class="row">
+                <div class="col-lg-3 col-6 order1">
+                    <div class="bord">
+                        <a class="logo icon-img-70" href="index.html">
+                            <img src="images/logo-light.png" alt="logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 order3">
+                    <div class="bg">
+                        <div class="full-width">
+                            <ul class="navbar-nav">
+                                <li class="nav-item"><a class="nav-link" href="index.html#home"><span class="rolling-text">Home</span></a></li>
+                                <li class="nav-item"><a class="nav-link" href="index.html#about"><span class="rolling-text">About</span></a></li>
+                                <li class="nav-item"><a class="nav-link" href="index.html#portfolio"><span class="rolling-text">Portfolio</span></a></li>
+                                <li class="nav-item"><a class="nav-link" href="index.html#blog"><span class="rolling-text">Blog</span></a></li>
+                                <li class="nav-item"><a class="nav-link" href="index.html#contact"><span class="rolling-text">Contact</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 order2">
+                    <div class="bord d-flex justify-content-end">
+                        <ul class="social d-flex rest">
+                            <li><a href="https://www.linkedin.com/in/bashar-shaikhani-7b9662284/" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
+                            <li><a href="https://www.behance.net/basharshikhani/" target="_blank"><i class="fab fa-behance"></i></a></li>
+                            <li><a href="https://www.instagram.com/basharshikhani?igsh=MTJic3FtbmtsYjBseg==" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="https://www.facebook.com/profile.php?id=100011213053355&mibextid=ZbWKwL" target="_blank"><i class="fab fa-facebook"></i></a></li>
+                            <li><a href="https://wa.me/963968532108" target="_blank"><i class="fab fa-whatsapp"></i></a></li>
+                        </ul>
+                        <button class="navbar-toggler" type="button">
+                            <span class="icon-bar"><i class="fas fa-bars"></i></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="project section-padding radius-15">
+            <div class="container">
+
+                <!-- Breadcrumb -->
+                <div class="proj-breadcrumb fade-up">
+                    <a href="index.html">Home</a>
+                    <i class="fas fa-chevron-right" style="font-size:9px;"></i>
+                    <a href="index.html#blog">Blog</a>
+                    <i class="fas fa-chevron-right" style="font-size:9px;"></i>
+                    <span id="breadcrumb-title">Article</span>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+
+                        <!-- Hero Image -->
+                        <div class="proj-hero-wrap fade-up">
+                            <img id="blog-hero" src="" alt="">
+                            <div class="proj-hero-overlay"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-7">
+                                <div class="cont md-mb50 fade-up">
+                                    <div id="blog-tags" class="proj-tags"></div>
+                                    <h3 id="blog-title" class="mb-15 fw-500"></h3>
+                                    <p id="blog-description" style="font-size:16px;line-height:1.85;color:rgba(255,255,255,0.75);"></p>
+                                    <div class="mt-30">
+                                        <h6 id="blog-sub-description" class="mb-15 line-height-28" style="color:rgba(255,255,255,0.55);font-weight:400;font-size:15px;"></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 offset-lg-1">
+                                <div id="sticky_item" class="fade-up">
+                                    <div class="proj-info-card">
+                                        <div class="proj-info-card__bar"></div>
+                                        <div class="proj-info-card__head">
+                                            <div class="proj-info-card__avatar">
+                                                <i class="fas fa-pen-nib"></i>
+                                            </div>
+                                            <div>
+                                                <div class="proj-info-card__head-label">Article Details</div>
+                                                <div class="proj-info-card__head-title" id="blog-title-card">—</div>
+                                            </div>
+                                        </div>
+                                        <div class="proj-info-card__body">
+                                            <div class="proj-info-row">
+                                                <div class="proj-info-row__icon"><i class="far fa-calendar-alt"></i></div>
+                                                <div>
+                                                    <div class="proj-info-row__label">Date</div>
+                                                    <p class="proj-info-row__value" id="blog-date"></p>
+                                                </div>
+                                            </div>
+                                            <div class="proj-info-row">
+                                                <div class="proj-info-row__icon"><i class="fas fa-tag"></i></div>
+                                                <div>
+                                                    <div class="proj-info-row__label">Category</div>
+                                                    <p class="proj-info-row__value" id="blog-category"></p>
+                                                </div>
+                                            </div>
+                                            <div class="proj-info-row">
+                                                <div class="proj-info-row__icon"><i class="far fa-user"></i></div>
+                                                <div>
+                                                    <div class="proj-info-row__label">Author</div>
+                                                    <p class="proj-info-row__value" id="blog-author"></p>
+                                                </div>
+                                            </div>
+                                            <div class="proj-info-row" id="blog-readtime-row">
+                                                <div class="proj-info-row__icon"><i class="far fa-clock"></i></div>
+                                                <div>
+                                                    <div class="proj-info-row__label">Read Time</div>
+                                                    <p class="proj-info-row__value" id="blog-readtime"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="proj-info-card__cta">
+                                            <a href="index.html#contact" class="proj-info-cta-btn">
+                                                <i class="fas fa-paper-plane"></i> Let's Work Together
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Full Blog Content (fetched from blog HTML file) -->
+                        <div class="row justify-content-center mt-80 fade-up" id="blog-content-wrap" style="display:none!important;">
+                            <div class="col-lg-9">
+                                <div id="blog-full-content" class="main-post"></div>
+                            </div>
+                        </div>
+
+                        <!-- Similar Blogs + Prev/Next -->
+                        <div class="similar-section fade-up">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-12">
+                                    <div class="d-flex align-items-center mb-40">
+                                        <div>
+                                            <div class="similar-label">More Reading</div>
+                                            <div class="similar-heading" style="margin-bottom:0;">Similar Articles</div>
+                                        </div>
+                                        <div class="d-flex gap-12 ml-auto" style="gap:12px;">
+                                            <a id="blog-prev" href="#" class="proj-nav-btn"><i class="fas fa-long-arrow-alt-left"></i> Prev</a>
+                                            <a id="blog-next" href="#" class="proj-nav-btn">Next <i class="fas fa-long-arrow-alt-right"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="similar-grid"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        var key = new URLSearchParams(window.location.search).get('blog');
+        var blog = blogsData.find(function(b){ return b.key === key; });
+
+        if (!blog) {
+            document.querySelector('.project').innerHTML = '<div class="container text-center" style="padding:100px 0"><h3>Article not found.</h3><a href="index.html#blog" style="color:#28e98c">Back to Blog</a></div>';
+        } else {
+            document.getElementById('page-title').textContent = blog.title;
+            document.getElementById('breadcrumb-title').textContent = blog.title;
+            document.getElementById('blog-title-card').textContent = blog.title;
+            document.getElementById('blog-hero').src = blog.heroImage || '';
+            document.getElementById('blog-hero').alt = blog.title;
+            document.getElementById('blog-title').textContent = blog.title;
+            document.getElementById('blog-description').textContent = blog.description || '';
+            document.getElementById('blog-sub-description').textContent = blog.subDescription || '';
+            document.getElementById('blog-date').textContent = blog.date || '';
+            document.getElementById('blog-category').textContent = blog.category || '';
+            document.getElementById('blog-author').textContent = blog.author || 'Bashar Shaikhani';
+
+            if (blog.readTime) {
+                document.getElementById('blog-readtime').textContent = blog.readTime;
+            } else {
+                document.getElementById('blog-readtime-row').style.display = 'none';
+            }
+
+            // Tags
+            var tagsEl = document.getElementById('blog-tags');
+            (blog.category || '').split(',').forEach(function(t) {
+                if (t.trim()) tagsEl.innerHTML += '<span class="proj-tag">' + t.trim() + '</span>';
+            });
+            if (blog.readTime) tagsEl.innerHTML += '<span class="proj-tag" style="border-color:rgba(255,255,255,.15);color:#aaa;">' + blog.readTime + '</span>';
+
+            // Inject full blog content directly from data
+            if (blog.content) {
+                document.getElementById('blog-full-content').innerHTML = blog.content;
+                document.getElementById('blog-content-wrap').style.cssText = '';
+            }
+
+            // Prev / Next
+            document.getElementById('blog-prev').href = blog.prev ? 'blog.html?blog=' + blog.prev : 'index.html#blog';
+            document.getElementById('blog-next').href = blog.next ? 'blog.html?blog=' + blog.next : 'index.html#blog';
+
+            // Similar blogs
+            var similar = blogsData.filter(function(b) {
+                return b.key !== blog.key && b.category === blog.category;
+            }).slice(0, 3);
+            if (similar.length < 2) {
+                blogsData.forEach(function(b) {
+                    if (b.key !== blog.key && similar.findIndex(function(s){ return s.key === b.key; }) === -1 && similar.length < 3) {
+                        similar.push(b);
+                    }
+                });
+            }
+            var similarHTML = '';
+            similar.forEach(function(b) {
+                similarHTML += '<div class="col-lg-4 col-md-6 mb-30">' +
+                    '<a href="blog.html?blog=' + b.key + '" class="similar-card">' +
+                        '<div class="similar-card__img-wrap"><img class="similar-card__img" src="' + (b.heroImage || '') + '" alt="' + b.title + '" loading="lazy"></div>' +
+                        '<div class="similar-card__body">' +
+                            '<div class="similar-card__cat">' + (b.category || '') + '</div>' +
+                            '<div class="similar-card__title">' + b.title + '</div>' +
+                            '<div class="similar-card__date">' + (b.date || '') + '</div>' +
+                        '</div>' +
+                        '<div class="similar-card__arrow"><i class="fas fa-arrow-right"></i></div>' +
+                    '</a>' +
+                '</div>';
+            });
+            document.getElementById('similar-grid').innerHTML = similarHTML;
+        }
+
+        // ── Read progress bar ──
+        window.addEventListener('scroll', function() {
+            var s = document.documentElement.scrollTop || document.body.scrollTop;
+            var h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById('read-progress').style.width = (s / h * 100) + '%';
+        });
+
+        // ── Intersection Observer fade-up ──
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(e) {
+                if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el); });
+
+        // ── Hero zoom-out ──
+        var heroWrap = document.querySelector('.proj-hero-wrap');
+        if (heroWrap) {
+            var heroObserver = new IntersectionObserver(function(entries) {
+                if (entries[0].isIntersecting) { setTimeout(function() { heroWrap.classList.add('revealed'); }, 200); heroObserver.disconnect(); }
+            }, { threshold: 0.1 });
+            heroObserver.observe(heroWrap);
+        }
+
+        // ── Cursor trail ──
+        var trailCanvas = document.getElementById('trailCanvas');
+        var tctx = trailCanvas.getContext('2d');
+        trailCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99998;';
+        trailCanvas.width = window.innerWidth;
+        trailCanvas.height = window.innerHeight;
+        window.addEventListener('resize', function() { trailCanvas.width = window.innerWidth; trailCanvas.height = window.innerHeight; });
+        var trail = [];
+        window.addEventListener('mousemove', function(e) { trail.push({ x: e.clientX, y: e.clientY, life: 1 }); if (trail.length > 20) trail.shift(); });
+        function drawTrail() {
+            tctx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+            trail.forEach(function(p, i) {
+                p.life -= 0.04;
+                if (p.life <= 0) return;
+                var r = (i / trail.length) * 5;
+                tctx.beginPath();
+                tctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+                tctx.fillStyle = 'rgba(40,233,140,' + (p.life * 0.6) + ')';
+                tctx.shadowColor = '#28e98c';
+                tctx.shadowBlur = 8;
+                tctx.fill();
+            });
+            trail = trail.filter(function(p){ return p.life > 0; });
+            requestAnimationFrame(drawTrail);
+        }
+        drawTrail();
+
+        // ── Magnetic buttons ──
+        document.querySelectorAll('.magnetic-btn').forEach(function(btn) {
+            btn.addEventListener('mousemove', function(e) {
+                var r = btn.getBoundingClientRect();
+                var x = (e.clientX - r.left - r.width / 2) * 0.25;
+                var y = (e.clientY - r.top - r.height / 2) * 0.25;
+                btn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+                btn.style.transition = 'transform 0.1s ease';
+            });
+            btn.addEventListener('mouseleave', function() {
+                btn.style.transform = 'translate(0,0)';
+                btn.style.transition = 'transform 0.4s ease';
+            });
+        });
+    </script>
+
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/jquery-migrate-3.4.0.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/scripts.js"></script>
+
+    <script>
+        (function() {
+            var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            function killCursor() {
+                var c = document.querySelector('.cursor');
+                if (c) { c.style.cssText = 'display:none!important;opacity:0!important;visibility:hidden!important;'; }
+                var canvas = document.getElementById('trailCanvas');
+                if (canvas) canvas.style.display = 'none';
+            }
+            if (isTouchDevice) killCursor();
+            window.addEventListener('touchstart', killCursor, { passive: true, once: false });
+        })();
+    </script>
+</body></html>

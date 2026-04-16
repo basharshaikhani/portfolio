@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Dashboard — Bashar Shaikhani</title>
+<link rel="shortcut icon" href="images/icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #28e98c;
+  --green-dim: rgba(40, 233, 140, 0.08);
+  --green-border: rgba(40, 233, 140, 0.25);
+  --bg: #0c0c0c;
+  --surface: #111111;
+  --surface2: #181818;
+  --surface3: #1d1d1d;
+  --border: rgba(255,255,255,0.06);
+  --border-solid: #1e1e1e;
+  --text: #ffffff;
+  --text-muted: #777;
+  --text-dim: #aaa;
+  --red: #e05555;
+  --radius: 15px;
+  --sidebar: 270px;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ── Layout ── */
+.layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: var(--sidebar);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  z-index: 100;
+  overflow-y: auto;
+}
+.main { margin-left: var(--sidebar); flex: 1; padding: 50px 40px; }
+
+/* ── Sidebar Header ── */
+.sidebar-logo {
+  padding: 32px 28px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.sidebar-logo .name span { color: var(--green); }
+.sidebar-logo .role {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Sidebar Nav ── */
+.sidebar-nav { flex: 1; padding: 20px 16px; }
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0 12px;
+  margin: 20px 0 8px;
+}
+.nav-label:first-child { margin-top: 0; }
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  position: relative;
+}
+.nav-btn:hover { background: var(--surface2); color: var(--text-dim); }
+.nav-btn.active { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-border); }
+.nav-btn i { width: 16px; text-align: center; font-size: 12px; }
+
+.count-pill {
+  margin-left: auto;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid var(--green-border);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.proj-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  gap: 8px;
+}
+.proj-nav-item:hover { background: var(--surface2); }
+.proj-nav-item.active { background: var(--green-dim); }
+.proj-nav-item .pname {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+.proj-nav-item .pkey {
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--surface2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  flex-shrink: 0;
+}
+
+/* ── Sidebar Footer ── */
+.sidebar-footer { padding: 16px; border-top: 1px solid var(--border); }
+.btn-full {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--green);
+  color: #000;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.btn-full:hover { background: #34ffA0; }
+
+/* ── Panels ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── Page Header ── */
+.page-header { margin-bottom: 40px; }
+.page-header .sub-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--green);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.page-header .sub-label::before {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: var(--green);
+}
+.page-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.page-header p { font-size: 14px; color: var(--text-muted); margin-top: 8px; line-height: 1.7; }
+
+/* ── Project Cards Grid ── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 20px;
+}
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+.project-card:hover { border-color: var(--green-border); transform: translateY(-3px); }
+.card-thumb {
+  height: 180px;
+  background: var(--surface2);
+  overflow: hidden;
+  position: relative;
+}
+.card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.project-card:hover .card-thumb img { transform: scale(1.04); }
+.card-thumb .no-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.card-body { padding: 18px 20px 12px; }
+.card-body h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.card-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green);
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+.card-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px 18px;
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.btn-green { background: var(--green); color: #000; border-color: var(--green); }
+.btn-green:hover { background: #34ffA0; }
+.btn-outline { background: transparent; border-color: var(--border-solid); color: var(--text-muted); }
+.btn-outline:hover { border-color: var(--text-muted); color: var(--text); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--text-muted); font-size: 11px; }
+.btn-ghost:hover { color: var(--text); }
+.btn-danger { background: transparent; border-color: transparent; color: var(--red); }
+.btn-danger:hover { background: rgba(224,85,85,0.1); border-color: var(--red); }
+
+/* ── Form Card ── */
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+input, textarea, select {
+  background: var(--surface2);
+  border: 1px solid var(--border-solid);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 12px 16px;
+  width: 100%;
+  transition: border-color 0.2s;
+  outline: none;
+}
+input:focus, textarea:focus { border-color: var(--green); }
+input::placeholder, textarea::placeholder { color: var(--text-muted); }
+textarea { resize: vertical; min-height: 90px; line-height: 1.7; }
+.hint { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+/* ── Tags (tools) ── */
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; min-height: 36px; }
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  color: var(--green);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.tag-item button {
+  background: none;
+  border: none;
+  color: var(--green);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.5;
+}
+.tag-item button:hover { opacity: 1; }
+.add-row { display: flex; gap: 8px; margin-top: 8px; }
+.add-row input { flex: 1; }
+
+/* ── Gallery items ── */
+.gallery-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border-solid);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+}
+.gallery-item span { flex: 1; font-size: 12px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gallery-item button { background: none; border: none; color: var(--red); cursor: pointer; opacity: 0.5; font-size: 14px; flex-shrink: 0; }
+.gallery-item button:hover { opacity: 1; }
+
+/* ── Form Actions ── */
+.form-actions { display: flex; gap: 12px; align-items: center; margin-top: 32px; flex-wrap: wrap; }
+.form-actions .spacer { flex: 1; }
+
+/* ── Export Panel ── */
+.export-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 20px;
+}
+.export-block h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+.export-block p { font-size: 13px; color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; }
+.steps { display: flex; flex-direction: column; gap: 14px; }
+.step { display: flex; gap: 14px; align-items: flex-start; }
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  color: var(--green);
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-text { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+.step-text strong { color: var(--text); }
+.code-preview {
+  background: var(--bg);
+  border: 1px solid var(--border-solid);
+  border-radius: 10px;
+  padding: 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  color: var(--green);
+  overflow-x: auto;
+  white-space: pre;
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+/* ── Empty state ── */
+.empty-state { text-align: center; padding: 80px 20px; color: var(--text-muted); grid-column: 1/-1; }
+.empty-state i { font-size: 40px; opacity: 0.15; margin-bottom: 16px; display: block; }
+.empty-state p { font-size: 14px; margin-bottom: 20px; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border-solid);
+  border-radius: 12px;
+  padding: 14px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error { border-color: var(--red); color: var(--red); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+
+@media (max-width: 900px) {
+  .sidebar { width: 100%; height: auto; position: relative; }
+  .main { margin-left: 0; padding: 24px 20px; }
+  .layout { flex-direction: column; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="name">Bashar <span>Shaikhani</span></div>
+      <div class="role">Portfolio Dashboard</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+
+      <button class="nav-btn active" onclick="showPanel('overview')" id="nav-overview">
+        ⊞
+        All Projects
+        <span class="count-pill" id="count-badge">0</span>
+      </button>
+
+      <button class="nav-btn" onclick="showPanel('add'); clearForm();" id="nav-add">
+        +
+        Add New Project
+      </button>
+
+      <button class="nav-btn" onclick="showPanel('export')" id="nav-export">
+        ↓
+        Export File
+      </button>
+
+      <div id="sidebar-project-list" style="display:none;"></div>
+
+      <div class="nav-label" style="margin-top:28px;">Blogs</div>
+
+      <button class="nav-btn" onclick="showPanel('blogs-overview')" id="nav-blogs-overview">
+        ✦
+        All Blogs
+        <span class="count-pill" id="blogs-count-badge">0</span>
+      </button>
+
+      <button class="nav-btn" onclick="showPanel('blogs-add'); clearBlogForm();" id="nav-blogs-add">
+        +
+        Add New Blog
+      </button>
+
+      <button class="nav-btn" onclick="showPanel('blogs-export')" id="nav-blogs-export">
+        ↓
+        Export Blogs File
+      </button>
+
+      <div id="sidebar-blog-list" style="display:none;"></div>
+
+      <div class="nav-label" style="margin-top:28px;">Resume</div>
+
+      <button class="nav-btn" onclick="showPanel('exp-overview')" id="nav-exp-overview">
+        ◈
+        Experience
+        <span class="count-pill" id="exp-count-badge">0</span>
+      </button>
+
+      <button class="nav-btn" onclick="showPanel('exp-add'); clearExpForm();" id="nav-exp-add">
+        +
+        Add Experience
+      </button>
+
+      <button class="nav-btn" onclick="showPanel('cred-overview')" id="nav-cred-overview">
+        ✦
+        Credentials
+        <span class="count-pill" id="cred-count-badge">0</span>
+      </button>
+
+      <button class="nav-btn" onclick="showPanel('cred-add'); clearCredForm();" id="nav-cred-add">
+        +
+        Add Credential
+      </button>
+
+      <button class="nav-btn" onclick="showPanel('resume-export')" id="nav-resume-export">
+        ↓
+        Export Resume Data
+      </button>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-full" onclick="showPanel('add'); clearForm();">
+        + New Project
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Overview -->
+    <div class="panel active" id="panel-overview">
+      <div class="page-header">
+        <div class="sub-label">Portfolio</div>
+        <h2>All Projects</h2>
+        <p>Click any card to edit its details.</p>
+      </div>
+      <div id="projects-grid" class="projects-grid"></div>
+    </div>
+
+    <!-- Add / Edit -->
+    <div class="panel" id="panel-add">
+      <div class="page-header">
+        <div class="sub-label">Form</div>
+        <h2 id="form-panel-title">Add New Project</h2>
+      </div>
+
+      <div class="form-card">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>Project Title *</label>
+            <input type="text" id="f-title" placeholder="e.g. Techy">
+          </div>
+
+          <div class="form-group">
+            <label>URL Key *</label>
+            <input type="text" id="f-key" placeholder="e.g. techy">
+            <span class="hint">Used in URL: <strong id="key-preview">...</strong></span>
+          </div>
+
+          <div class="form-group full">
+            <label>Hero Image Path *</label>
+            <input type="text" id="f-hero" placeholder="images/protfilo/techy/protfilo.jpg">
+          </div>
+
+          <div class="form-group full">
+            <label>Description *</label>
+            <textarea id="f-description" placeholder="Main description of the project..."></textarea>
+          </div>
+
+          <div class="form-group full">
+            <label>Sub Description</label>
+            <textarea id="f-subdesc" rows="2" placeholder="A secondary detail line..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="text" id="f-date" placeholder="18, May 2024">
+            <span class="hint">For sorting, also fill Date Sort below.</span>
+          </div>
+
+          <div class="form-group">
+            <label>Date Sort (YYYY-MM-DD) *</label>
+            <input type="text" id="f-datesort" placeholder="2024-05-18">
+            <span class="hint">Used for ordering. Format: YYYY-MM-DD</span>
+          </div>
+
+          <div class="form-group">
+            <label>Category *</label>
+            <input type="text" id="f-category" placeholder="e.g. UI/UX Design">
+          </div>
+
+          <div class="form-group">
+            <label>Client *</label>
+            <input type="text" id="f-client" placeholder="e.g. Technozleader">
+          </div>
+
+          <div class="form-group">
+            <label>Website URL</label>
+            <input type="text" id="f-website-url" placeholder="https://example.com">
+          </div>
+
+          <div class="form-group">
+            <label>Website Label</label>
+            <input type="text" id="f-website-label" placeholder="Visit Website">
+          </div>
+
+          <div class="form-group">
+            <label>Prev Project Key</label>
+            <input type="text" id="f-prev" placeholder="e.g. dallah-habash">
+          </div>
+
+          <div class="form-group">
+            <label>Next Project Key</label>
+            <input type="text" id="f-next" placeholder="e.g. damascus-jewelry">
+          </div>
+
+        </div>
+
+        <hr class="divider">
+
+        <div class="form-group">
+          <label>Tools Used *</label>
+          <div class="tag-list" id="tools-list"></div>
+          <div class="add-row">
+            <input type="text" id="tool-input" placeholder="e.g. Figma" onkeydown="if(event.key==='Enter'){addTool();event.preventDefault();}">
+            <button class="btn btn-outline" onclick="addTool()">+ Add</button>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="form-group">
+          <label>Gallery Images *</label>
+          <div id="gallery-list"></div>
+          <div class="add-row">
+            <input type="text" id="gallery-input" placeholder="images/protfilo/techy/techy (1).jpg" onkeydown="if(event.key==='Enter'){addGalleryItem();event.preventDefault();}">
+            <button class="btn btn-outline" onclick="addGalleryItem()">+ Add</button>
+          </div>
+          <span class="hint" style="margin-top:6px;">Add each image path one by one.</span>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-outline" onclick="clearForm(); showPanel('overview');">Cancel</button>
+          <div class="spacer"></div>
+          <button class="btn btn-danger" id="delete-btn" style="display:none;" onclick="deleteCurrentProject()">
+            ✕ Delete
+          </button>
+          <button class="btn btn-green" onclick="saveProject()">
+            ✓ Save Project
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="panel" id="panel-export">
+      <div class="page-header">
+        <div class="sub-label">Export</div>
+        <h2>Export Data File</h2>
+        <p>Download <code style="color:var(--green)">works-data.js</code> and place it in your <code style="color:var(--green)">js/</code> folder on your server after every update.</p>
+      </div>
+
+      <div class="export-block">
+        <h3>How it works</h3>
+        <p>The dashboard saves everything in your browser. When you're ready to go live, export and replace the file on your server.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Click <strong>Download works-data.js</strong> below.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Replace the old <strong>projects.html</strong> on your server.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">All portfolio links pointing to <strong>projects.html?work=key</strong> will work instantly.</div></div>
+        </div>
+      </div>
+
+      <div class="export-block">
+        <h3>Data Preview</h3>
+        <p>This is the worksData that will be embedded in the exported file:</p>
+        <div class="code-preview" id="code-preview"></div>
+        <div class="form-actions" style="margin-top:20px;">
+          <button class="btn btn-green" onclick="downloadTemplate()">
+            ↓ Download works-data.js
+          </button>
+          <button class="btn btn-outline" onclick="copyCode()">
+            ⧉ Copy Data
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blogs Overview -->
+    <div class="panel" id="panel-blogs-overview">
+      <div class="page-header">
+        <div class="sub-label">Blogs</div>
+        <h2>All Blogs</h2>
+        <p>Click any card to edit its details.</p>
+      </div>
+      <div id="blogs-grid" class="projects-grid"></div>
+    </div>
+
+    <!-- Blogs Add / Edit -->
+    <div class="panel" id="panel-blogs-add">
+      <div class="page-header">
+        <div class="sub-label">Blogs</div>
+        <h2 id="blog-form-panel-title">Add New Blog</h2>
+      </div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Blog Title *</label>
+            <input type="text" id="bf-title" placeholder="e.g. Dark Pattern UX">
+          </div>
+          <div class="form-group">
+            <label>URL Key *</label>
+            <input type="text" id="bf-key" placeholder="e.g. dark-pattern">
+            <span class="hint">Used as identifier: <strong id="bkey-preview">...</strong></span>
+          </div>
+          <div class="form-group full">
+            <label>Hero Image Path *</label>
+            <input type="text" id="bf-hero" placeholder="images/blog/dark-pattern/cover.jpg">
+          </div>
+          <div class="form-group full">
+            <label>Description *</label>
+            <textarea id="bf-description" placeholder="Main description of the blog post..."></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Sub Description</label>
+            <textarea id="bf-subdesc" rows="2" placeholder="A secondary detail line..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="text" id="bf-date" placeholder="18, May 2024">
+          </div>
+          <div class="form-group">
+            <label>Date Sort (YYYY-MM-DD) *</label>
+            <input type="text" id="bf-datesort" placeholder="2024-05-18">
+            <span class="hint">Used for ordering. Format: YYYY-MM-DD</span>
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <input type="text" id="bf-category" placeholder="e.g. UX Research">
+          </div>
+          <div class="form-group">
+            <label>Author</label>
+            <input type="text" id="bf-author" placeholder="e.g. Bashar Shaikhani">
+          </div>
+          <div class="form-group">
+            <label>HTML File Path *</label>
+            <input type="text" id="bf-file" placeholder="e.g. dark_pattern.html">
+            <span class="hint">The HTML file for this blog post.</span>
+          </div>
+          <div class="form-group">
+            <label>Read Time</label>
+            <input type="text" id="bf-readtime" placeholder="e.g. 5 min read">
+          </div>
+          <div class="form-group">
+            <label>Prev Blog Key</label>
+            <input type="text" id="bf-prev" placeholder="e.g. business-model-canvas">
+          </div>
+          <div class="form-group">
+            <label>Next Blog Key</label>
+            <input type="text" id="bf-next" placeholder="e.g. product-research">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-outline" onclick="clearBlogForm(); showPanel('blogs-overview');">Cancel</button>
+          <div class="spacer"></div>
+          <button class="btn btn-danger" id="blog-delete-btn" style="display:none;" onclick="deleteCurrentBlog()">✕ Delete</button>
+          <button class="btn btn-green" onclick="saveBlog()">✓ Save Blog</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blogs Export -->
+    <div class="panel" id="panel-blogs-export">
+      <div class="page-header">
+        <div class="sub-label">Export</div>
+        <h2>Export Blogs Data File</h2>
+        <p>Download <code style="color:var(--green)">blogs-data.js</code> and place it in your <code style="color:var(--green)">js/</code> folder on your server after every update.</p>
+      </div>
+      <div class="export-block">
+        <h3>How it works</h3>
+        <p>The dashboard saves everything in your browser. When you're ready to go live, export and replace the file on your server.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Click <strong>Download blogs-data.js</strong> below.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Replace the old <strong>blogs-data.js</strong> on your server.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">All links to blog HTML files will work instantly.</div></div>
+        </div>
+      </div>
+      <div class="export-block">
+        <h3>Data Preview</h3>
+        <p>This is the blogsData that will be embedded in the exported file:</p>
+        <div class="code-preview" id="blogs-code-preview"></div>
+        <div class="form-actions" style="margin-top:20px;">
+          <button class="btn btn-green" onclick="downloadBlogsTemplate()">↓ Download blogs-data.js</button>
+          <button class="btn btn-outline" onclick="copyBlogsCode()">⧉ Copy Data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Experience Overview ── -->
+    <div class="panel" id="panel-exp-overview">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="sub-label">Resume</div>
+          <h2>Experience</h2>
+          <p>Manage your work history. Items are ordered by the Order field (lowest = top).</p>
+        </div>
+        <button class="btn btn-green" style="margin-top:4px;" onclick="showPanel('exp-add'); clearExpForm();">+ Add Experience</button>
+      </div>
+      <div id="exp-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+    </div>
+
+    <!-- ── Experience Add/Edit ── -->
+    <div class="panel" id="panel-exp-add">
+      <div class="page-header">
+        <div class="sub-label">Resume</div>
+        <h2 id="exp-form-title">Add Experience</h2>
+      </div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Job Title *</label>
+            <input type="text" id="ef-title" placeholder="e.g. Director of Design & Programming">
+          </div>
+          <div class="form-group">
+            <label>Company *</label>
+            <input type="text" id="ef-company" placeholder="e.g. UPN">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <input type="text" id="ef-type" placeholder="e.g. Full-Time · Remote">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="ef-location" placeholder="e.g. Kuwait">
+          </div>
+          <div class="form-group">
+            <label>Start Date *</label>
+            <input type="text" id="ef-start" placeholder="e.g. Dec 2024">
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="text" id="ef-end" placeholder="e.g. Apr 2025 (or leave blank for Present)">
+          </div>
+          <div class="form-group full">
+            <label>Badge Label</label>
+            <input type="text" id="ef-badge" placeholder="e.g. Most Recent (leave blank for none)">
+          </div>
+          <div class="form-group full">
+            <label>Tags (comma-separated)</label>
+            <input type="text" id="ef-tags" placeholder="e.g. Leadership, UI/UX, Agile, Product">
+          </div>
+          <div class="form-group full">
+            <label>Bullet Points *</label>
+            <span class="hint">One bullet per line.</span>
+            <textarea id="ef-bullets" placeholder="Led design and development teams...&#10;Defined and implemented the department's strategic vision...&#10;Ran Agile lifecycles..." style="min-height:140px;"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Role Label 1 (optional sub-heading)</label>
+            <input type="text" id="ef-role1" placeholder="e.g. As a Product Researcher:">
+          </div>
+          <div class="form-group full">
+            <label>Role 1 Bullets</label>
+            <textarea id="ef-bullets2" placeholder="Bullet points for role 1..." style="min-height:100px;"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Role Label 2 (optional)</label>
+            <input type="text" id="ef-role2" placeholder="e.g. As a Graphic Designer:">
+          </div>
+          <div class="form-group full">
+            <label>Role 2 Bullets</label>
+            <textarea id="ef-bullets3" placeholder="Bullet points for role 2..." style="min-height:100px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Order</label>
+            <input type="number" id="ef-order" placeholder="1 = top">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-outline" onclick="clearExpForm(); showPanel('exp-overview');">Cancel</button>
+          <div class="spacer"></div>
+          <button class="btn btn-danger" id="exp-delete-btn" style="display:none;" onclick="deleteCurrentExp()">✕ Delete</button>
+          <button class="btn btn-green" onclick="saveExp()">✓ Save Experience</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Credentials Overview ── -->
+    <div class="panel" id="panel-cred-overview">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="sub-label">Resume</div>
+          <h2>Credentials &amp; Certifications</h2>
+          <p>Manage your education, certificates, and awards.</p>
+        </div>
+        <button class="btn btn-green" style="margin-top:4px;" onclick="showPanel('cred-add'); clearCredForm();">+ Add Credential</button>
+      </div>
+      <div id="cred-grid" class="projects-grid"></div>
+    </div>
+
+    <!-- ── Credential Add/Edit ── -->
+    <div class="panel" id="panel-cred-add">
+      <div class="page-header">
+        <div class="sub-label">Resume</div>
+        <h2 id="cred-form-title">Add Credential</h2>
+      </div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Title *</label>
+            <input type="text" id="cf-title" placeholder="e.g. Google UX Design Specialization">
+          </div>
+          <div class="form-group">
+            <label>Sub Title</label>
+            <input type="text" id="cf-sub" placeholder="e.g. 7 Courses">
+          </div>
+          <div class="form-group">
+            <label>Organisation *</label>
+            <input type="text" id="cf-org" placeholder="e.g. Google · Via Coursera">
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="text" id="cf-date" placeholder="e.g. Jan – Mar 2024">
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="cf-cat" style="background:var(--surface2);color:var(--text);border:1px solid var(--border-solid);border-radius:10px;padding:10px 14px;font-size:13px;width:100%;">
+              <option value="degree">Degree</option>
+              <option value="design">Design</option>
+              <option value="dev">Development</option>
+              <option value="product">Product</option>
+              <option value="award">Award</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Image Path</label>
+            <input type="text" id="cf-img" placeholder="images/cerf/google_ux.jpeg">
+          </div>
+          <div class="form-group full">
+            <label>Description</label>
+            <textarea id="cf-desc" placeholder="Short description of what you learned..."></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Verify URL (optional)</label>
+            <input type="text" id="cf-url" placeholder="https://coursera.org/share/...">
+          </div>
+          <div class="form-group">
+            <label>Order</label>
+            <input type="number" id="cf-order" placeholder="1 = top">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-outline" onclick="clearCredForm(); showPanel('cred-overview');">Cancel</button>
+          <div class="spacer"></div>
+          <button class="btn btn-danger" id="cred-delete-btn" style="display:none;" onclick="deleteCurrentCred()">✕ Delete</button>
+          <button class="btn btn-green" onclick="saveCred()">✓ Save Credential</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Resume Export ── -->
+    <div class="panel" id="panel-resume-export">
+      <div class="page-header">
+        <div class="sub-label">Export</div>
+        <h2>Export Resume Data File</h2>
+        <p>Download <code style="color:var(--green)">resume-data.js</code> and place it in your project folder.</p>
+      </div>
+      <div class="export-block">
+        <h3>How it works</h3>
+        <p>The dashboard saves everything in your browser. Export to get a <code style="color:var(--green)">resume-data.js</code> with both <code style="color:var(--green)">experienceData</code> and <code style="color:var(--green)">credentialsData</code> arrays ready to use.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Click <strong>Download resume-data.js</strong> below.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Replace the old file on your server.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">Your index.html will render the updated data.</div></div>
+        </div>
+      </div>
+      <div class="export-block">
+        <h3>Data Preview</h3>
+        <div class="code-preview" id="resume-code-preview"></div>
+        <div class="form-actions" style="margin-top:20px;">
+          <button class="btn btn-green" onclick="downloadResumeData()">↓ Download resume-data.js</button>
+          <button class="btn btn-outline" onclick="copyResumeCode()">⧉ Copy Data</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──────────────────────────────────────
+let projects = {};
+let editingKey = null;
+let tools = [];
+let gallery = [];
+const STORAGE_KEY = 'bashar_portfolio_works';
+const DATA_VERSION = 'v9';
+
+// ── Blogs State ────────────────────────────────
+let blogs = {};
+let blogEditingKey = null;
+const BLOGS_STORAGE_KEY = 'bashar_portfolio_blogs';
+const BLOGS_DATA_VERSION = 'v1'; // bump this to force reload seed
+
+function loadProjects() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const version = localStorage.getItem(STORAGE_KEY + '_version');
+  if (saved && version === DATA_VERSION) {
+    try { projects = JSON.parse(saved); } catch(e) { projects = {}; }
+  } else {
+    projects = {
+      "hope": {"order": 1, "dateSort": "2023-01-01", "title": "Hope Dental Clinic", "heroImage": "images/protfilo/hope/protfilo.jpg", "description": "Brand identity and social media graphic design for Hope Dental Clinic, creating a clean and trustworthy visual language that reflects the clinic's professional medical services.", "subDescription": "Designed a complete set of social media posts, stories, and promotional materials.", "tools": ["Adobe Illustrator", "Photoshop", "Canva"], "date": "2023", "category": "Graphic Design", "client": "Hope Dental Clinic", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/hope/protfilo.jpg", "images/protfilo/hope/1.jpg", "images/protfilo/hope/2.jpg", "images/protfilo/hope/4.jpg", "images/protfilo/hope/5.jpg", "images/protfilo/hope/6.jpg", "images/protfilo/hope/7.jpg", "images/protfilo/hope/8.jpg", "images/protfilo/hope/9.jpg", "images/protfilo/hope/10.jpg", "images/protfilo/hope/11.jpg", "images/protfilo/hope/12.jpg", "images/protfilo/hope/13.jpg", "images/protfilo/hope/14.jpg"], "prev": "damascus-jewelry-graphic", "next": "trade-com"},
+      "trade-com": {"order": 2, "dateSort": "2023-02-01", "title": "Trade.com", "heroImage": "images/protfilo/Trade/protfilo.jpg", "description": "UI/UX design and product research for Trade.com, a comprehensive trading platform. Focused on creating intuitive user flows and a clean interface for complex financial data.", "subDescription": "Conducted in-depth user research and competitive analysis to inform design decisions.", "tools": ["Figma", "Miro", "Notion"], "date": "2023", "category": "UI/UX Design", "client": "Trade.com", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/Trade/protfilo.jpg", "images/protfilo/Trade/1.jpg"], "prev": "hope", "next": "lowen"},
+      "lowen": {"order": 3, "dateSort": "2023-03-01", "title": "LOWEN A BIS Z GMBH", "heroImage": "images/protfilo/lowen/protfilo.jpg", "description": "Graphic design work for LOWEN A BIS Z GMBH, a German company. Designed brand materials, marketing collateral, and visual assets aligned with their corporate identity.", "subDescription": "Delivered print-ready and digital assets following German market standards.", "tools": ["Adobe Illustrator", "Photoshop"], "date": "2023", "category": "Graphic Design", "client": "LOWEN A BIS Z GMBH", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/lowen/protfilo.jpg", "images/protfilo/lowen/1.jpg", "images/protfilo/lowen/2.jpg", "images/protfilo/lowen/3.jpg", "images/protfilo/lowen/4.jpg", "images/protfilo/lowen/5.jpg", "images/protfilo/lowen/6.jpg", "images/protfilo/lowen/7.jpg"], "prev": "trade-com", "next": "nabarati"},
+      "nabarati": {"order": 4, "dateSort": "2023-04-01", "title": "Nabarati.ai", "heroImage": "images/protfilo/Nabarati/protfilo.jpg", "description": "UI/UX design and product research for Nabarati.ai, an AI-powered platform. Designed the user experience from research to high-fidelity prototypes.", "subDescription": "Focused on making complex AI features accessible and intuitive for end users.", "tools": ["Figma", "Miro", "FigJam"], "date": "2023", "category": "UI/UX Design", "client": "Nabarati.ai", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/Nabarati/protfilo.jpg", "images/protfilo/Nabarati/1.jpg"], "prev": "lowen", "next": "al-shamiaa"},
+      "al-shamiaa": {"order": 5, "dateSort": "2023-05-01", "title": "Al Shamiaa Social Media Posts", "heroImage": "images/protfilo/al_shamiaa/protfilo.jpg", "description": "Social media graphic design for Al Shamiaa, creating engaging visual content for their social media channels.", "subDescription": "Designed a consistent visual identity across all social media platforms.", "tools": ["Photoshop", "Illustrator", "Canva"], "date": "2023", "category": "Graphic Design", "client": "Al Shamiaa", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/al_shamiaa/protfilo.jpg", "images/protfilo/al_shamiaa/shamiaa (1).jpg", "images/protfilo/al_shamiaa/shamiaa (2).jpg", "images/protfilo/al_shamiaa/shamiaa (3).jpg", "images/protfilo/al_shamiaa/shamiaa (4).jpg", "images/protfilo/al_shamiaa/shamiaa (5).jpg", "images/protfilo/al_shamiaa/shamiaa (6).jpg", "images/protfilo/al_shamiaa/shamiaa (7).jpg", "images/protfilo/al_shamiaa/shamiaa (8).jpg", "images/protfilo/al_shamiaa/shamiaa (9).jpg", "images/protfilo/al_shamiaa/shamiaa (10).jpg", "images/protfilo/al_shamiaa/shamiaa (11).jpg", "images/protfilo/al_shamiaa/shamiaa (13).jpg", "images/protfilo/al_shamiaa/shamiaa (14).jpg", "images/protfilo/al_shamiaa/shamiaa (15).jpg", "images/protfilo/al_shamiaa/shamiaa (17).jpg", "images/protfilo/al_shamiaa/shamiaa (18).jpg"], "prev": "nabarati", "next": "upn"},
+      "upn": {"order": 6, "dateSort": "2023-06-01", "title": "UPN Social Media Posts", "heroImage": "images/protfilo/UPN/protfilo.jpg", "description": "Social media graphic design for UPN, delivering creative and on-brand content for their digital presence.", "subDescription": "Created templates and post designs that maintained brand consistency.", "tools": ["Photoshop", "Illustrator"], "date": "2023", "category": "Graphic Design", "client": "UPN", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/UPN/protfilo.jpg", "images/protfilo/UPN/pic (1).jpg", "images/protfilo/UPN/pic (2).jpg", "images/protfilo/UPN/pic (3).jpg", "images/protfilo/UPN/pic (4).jpg", "images/protfilo/UPN/pic (5).jpg", "images/protfilo/UPN/pic (6).jpg", "images/protfilo/UPN/pic (7).jpg", "images/protfilo/UPN/pic (8).jpg", "images/protfilo/UPN/pic (9).jpg", "images/protfilo/UPN/pic (10).jpg", "images/protfilo/UPN/pic (11).jpg", "images/protfilo/UPN/pic (12).jpg", "images/protfilo/UPN/pic (13).jpg", "images/protfilo/UPN/pic (17).jpg", "images/protfilo/UPN/pic (18).jpg", "images/protfilo/UPN/pic (19).jpg"], "prev": "al-shamiaa", "next": "rukn-al-din"},
+      "rukn-al-din": {"order": 7, "dateSort": "2023-07-01", "title": "Rukn Al Din Media Office", "heroImage": "images/protfilo/Rukn_al_Din_Media_Office/protfilo.jpg", "description": "Graphic design for Rukn Al Din Media Office, producing visual content for their media and communications needs.", "subDescription": "Delivered professional design assets tailored to the media industry.", "tools": ["Photoshop", "Illustrator"], "date": "2023", "category": "Graphic Design", "client": "Rukn Al Din Media Office", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/Rukn_al_Din_Media_Office/protfilo.jpg", "images/protfilo/Rukn_al_Din_Media_Office/2.jpg", "images/protfilo/Rukn_al_Din_Media_Office/3.jpg", "images/protfilo/Rukn_al_Din_Media_Office/4.jpg", "images/protfilo/Rukn_al_Din_Media_Office/5.jpg", "images/protfilo/Rukn_al_Din_Media_Office/6.jpg", "images/protfilo/Rukn_al_Din_Media_Office/7.jpg", "images/protfilo/Rukn_al_Din_Media_Office/9.jpg", "images/protfilo/Rukn_al_Din_Media_Office/10.jpg", "images/protfilo/Rukn_al_Din_Media_Office/11.jpg", "images/protfilo/Rukn_al_Din_Media_Office/12.jpg", "images/protfilo/Rukn_al_Din_Media_Office/13.jpg", "images/protfilo/Rukn_al_Din_Media_Office/14.jpg", "images/protfilo/Rukn_al_Din_Media_Office/15.jpg", "images/protfilo/Rukn_al_Din_Media_Office/16.jpg", "images/protfilo/Rukn_al_Din_Media_Office/17.jpg", "images/protfilo/Rukn_al_Din_Media_Office/18.jpg", "images/protfilo/Rukn_al_Din_Media_Office/19.jpg"], "prev": "upn", "next": "eduorizon-posts"},
+      "eduorizon-posts": {"order": 8, "dateSort": "2023-08-01", "title": "Eduorizon Social Media Posts", "heroImage": "images/protfilo/eduorizon_posts/Eduorizon-Social-Media-Posts.jpg", "description": "Social media graphic design for Eduorizon, an education-focused platform. Created engaging posts that communicate their educational offerings clearly.", "subDescription": "Designed a full set of social media templates and post series.", "tools": ["Photoshop", "Figma"], "date": "2023", "category": "Graphic Design", "client": "Eduorizon", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/eduorizon_posts/Eduorizon-Social-Media-Posts.jpg", "images/protfilo/eduorizon_posts/5.jpg", "images/protfilo/eduorizon_posts/4.jpg", "images/protfilo/eduorizon_posts/6.jpg", "images/protfilo/eduorizon_posts/7.jpg", "images/protfilo/eduorizon_posts/10.jpg", "images/protfilo/eduorizon_posts/3.jpg", "images/protfilo/eduorizon_posts/1.jpg", "images/protfilo/eduorizon_posts/8.jpg", "images/protfilo/eduorizon_posts/2.jpg", "images/protfilo/eduorizon_posts/9.jpg"], "prev": "rukn-al-din", "next": "mr-quick"},
+      "mr-quick": {"order": 9, "dateSort": "2023-09-01", "title": "Mr.Quick", "heroImage": "images/protfilo/Mr.Quick/portfilo.jpg", "description": "Graphic design for Mr.Quick, a fast-service brand. Developed bold and energetic visual identity materials.", "subDescription": "Focused on speed and clarity as core visual principles.", "tools": ["Illustrator", "Photoshop"], "date": "2023", "category": "Graphic Design", "client": "Mr.Quick", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/Mr.Quick/portfilo.jpg", "images/protfilo/Mr.Quick/mockup.jpg", "images/protfilo/Mr.Quick/mockup2.jpg"], "prev": "eduorizon-posts", "next": "technozleader-posts"},
+      "technozleader-posts": {"order": 10, "dateSort": "2023-10-01", "title": "Technozleader Social Media Posts", "heroImage": "images/protfilo/technozleader_post/protfilo.jpg", "description": "Crafted a unique visual identity for Technozleader's social media revamp! Designed captivating posts that blend creativity with AI-generated imagery, showcasing Technozleader's potential in the most compelling way.", "subDescription": "Conceptualized video content to further amplify the brand message.", "tools": ["Photoshop", "Illustrator", "AI Tools"], "date": "5, May 2024", "category": "Graphic Design", "client": "Technozleader", "website": {"label": "Technozleader LinkedIn", "url": "https://www.linkedin.com/company/technozleader/"}, "gallery": ["images/protfilo/technozleader_post/protfilo.jpg", "images/protfilo/technozleader_post/14.jpg", "images/protfilo/technozleader_post/13.jpg", "images/protfilo/technozleader_post/12.jpg", "images/protfilo/technozleader_post/16.jpg", "images/protfilo/technozleader_post/post (1).jpg", "images/protfilo/technozleader_post/post (2).jpg", "images/protfilo/technozleader_post/post (12).jpg", "images/protfilo/technozleader_post/post (4).jpg", "images/protfilo/technozleader_post/post (5).jpg", "images/protfilo/technozleader_post/post (6).jpg", "images/protfilo/technozleader_post/post (7).jpg", "images/protfilo/technozleader_post/post (8).jpg", "images/protfilo/technozleader_post/post (9).jpg", "images/protfilo/technozleader_post/post (10).jpg", "images/protfilo/technozleader_post/post (11).jpg"], "prev": "mr-quick", "next": "eduorizon"},
+      "eduorizon": {"order": 11, "dateSort": "2023-11-01", "title": "Eduorizon", "heroImage": "images/protfilo/Edorizon/protfilo.jpg", "description": "Full UX design and graphic identity for Eduorizon, covering the complete product experience from onboarding to core features.", "subDescription": "Merged UX research with visual design to create a cohesive educational product.", "tools": ["Figma", "Illustrator", "Miro"], "date": "2023", "category": "UX Design", "client": "Eduorizon", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/Edorizon/protfilo.jpg", "images/protfilo/Edorizon/mockup (1).jpg", "images/protfilo/Edorizon/mockup (2).jpg", "images/protfilo/Edorizon/mockup (3).jpg", "images/protfilo/Edorizon/mockup (4).jpg", "images/protfilo/Edorizon/mockup (5).jpg", "images/protfilo/Edorizon/mockup (6).jpg", "images/protfilo/Edorizon/mockup (7).jpg", "images/protfilo/Edorizon/mockup (8).jpg", "images/protfilo/Edorizon/mockup (9).jpg", "images/protfilo/Edorizon/mockup (10).jpg"], "prev": "technozleader-posts", "next": "bayarea"},
+      "bayarea": {"order": 12, "dateSort": "2023-12-01", "title": "BayArea", "heroImage": "images/protfilo/bayarea/protfilo.jpg", "description": "Full stack development and UI/UX & graphic design for BayArea, delivering a complete digital product from design system to deployed application.", "subDescription": "Handled both the design system and full front-to-back development.", "tools": ["HTML", "CSS", "JS", "PHP", "MySQL", "Figma"], "date": "2023", "category": "Full Stack Developer", "client": "BayArea", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/bayarea/protfilo.jpg", "images/protfilo/bayarea/homepage.jpg", "images/protfilo/bayarea/about.jpg", "images/protfilo/bayarea/services.jpg", "images/protfilo/bayarea/project.jpg", "images/protfilo/bayarea/portfolio.jpg", "images/protfilo/bayarea/contact.jpg", "images/protfilo/bayarea/mockup (1).jpg", "images/protfilo/bayarea/mockup (2).jpg", "images/protfilo/bayarea/mockup (3).jpg", "images/protfilo/bayarea/mockup (4).jpg"], "prev": "eduorizon", "next": "technozleader-website"},
+      "technozleader-website": {"order": 13, "dateSort": "2023-13-01", "title": "Technozleader Website", "heroImage": "images/protfilo/technozleader_website/protfilo.jpg", "description": "UX design and product research for the Technozleader website, a technology company. Designed the full website experience with a focus on clear communication.", "subDescription": "Conducted user research and created wireframes through to final prototypes.", "tools": ["Figma", "Miro", "FigJam"], "date": "2024", "category": "UX Design", "client": "Technozleader", "website": {"label": "Technozleader Website", "url": "https://technozleader.com/"}, "gallery": ["images/protfilo/technozleader_website/protfilo.jpg", "images/protfilo/technozleader_website/web.jpg"], "prev": "bayarea", "next": "techy"},
+      "techy": {"order": 14, "dateSort": "2023-14-01", "title": "Techy", "heroImage": "images/protfilo/techy/protfilo.jpg", "description": "Introducing Techy, the futuristic AI robot I crafted for TechnozLeader! Using Blender and other design tools, I brought Techy to life in a myriad of poses and forms.", "subDescription": "The process was nothing short of magical, yielding an astounding visual identity for the company.", "tools": ["3D Blender", "Figma", "Canva"], "date": "18, May 2024", "category": "Graphic Design", "client": "Technozleader", "website": {"label": "Technozleader Website", "url": "https://technozleader.com/"}, "gallery": ["images/protfilo/techy/protfilo.jpg", "images/protfilo/techy/techy (1).jpg", "images/protfilo/techy/techy (2).jpg", "images/protfilo/techy/techy (3).jpg", "images/protfilo/techy/techy (4).jpg"], "prev": "technozleader-website", "next": "dallah-habash"},
+      "dallah-habash": {"order": 15, "dateSort": "2023-15-01", "title": "Dallah Habash", "heroImage": "images/protfilo/dallahhabash/protfilo.jpg", "description": "The website serves as a centralized hub for Dallah Habash products, offering a dynamic dashboard for efficient website management, product additions, and a range of other convenient services.", "subDescription": "Implemented a robust entry information verification system to enhance security.", "tools": ["HTML - CSS - JS", "MySQL - PHP", "CPanel"], "date": "25, May 2023", "category": "Full Stack Developer", "client": "A2Z", "website": {"label": "Dallah Habash", "url": "https://habashdallah.sa/"}, "gallery": ["images/protfilo/dallahhabash/protfilo.jpg", "images/protfilo/dallahhabash/Homepage.JPG", "images/protfilo/dallahhabash/Homepage2.JPG", "images/protfilo/dallahhabash/proudect.JPG", "images/protfilo/dallahhabash/view.JPG", "images/protfilo/dallahhabash/blogs.JPG", "images/protfilo/dallahhabash/contc.JPG", "images/protfilo/dallahhabash/dashborad.JPG", "images/protfilo/dallahhabash/add.JPG", "images/protfilo/dallahhabash/proudectm.JPG"], "prev": "techy", "next": "safeside"},
+      "safeside": {"order": 16, "dateSort": "2023-16-01", "title": "SafeSide", "heroImage": "images/protfilo/inusrance/protfilo.jpg", "description": "UX design and full stack development for SafeSide, an insurance platform. Built a secure and intuitive experience for users managing their insurance needs.", "subDescription": "Focused on trust, clarity, and security in both UX and technical implementation.", "tools": ["Figma", "HTML", "CSS", "JS", "PHP"], "date": "2023", "category": "Full Stack Developer", "client": "SafeSide", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/inusrance/protfilo.jpg", "images/protfilo/inusrance/homepage (4).jpg", "images/protfilo/inusrance/insurance.jpg", "images/protfilo/inusrance/paln.jpg", "images/protfilo/inusrance/data.jpg", "images/protfilo/inusrance/Dashborad (1).jpg", "images/protfilo/inusrance/account.jpg", "images/protfilo/inusrance/addemployee.jpg", "images/protfilo/inusrance/cheack.jpg", "images/protfilo/inusrance/electric.jpg", "images/protfilo/inusrance/employee.jpg", "images/protfilo/inusrance/reipct.jpg"], "prev": "dallah-habash", "next": "alwardah-albaydha"},
+      "alwardah-albaydha": {"order": 17, "dateSort": "2023-17-01", "title": "Alwardah Albaydha", "heroImage": "images/protfilo/alwardah_albaydha/mockup (1).jpg", "description": "Graphic design for Alwardah Albaydha, creating elegant visual materials that reflect the brand identity.", "subDescription": "Produced brand materials with a refined aesthetic.", "tools": ["Illustrator", "Photoshop"], "date": "2023", "category": "Graphic Design", "client": "Alwardah Albaydha", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/alwardah_albaydha/mockup (1).jpg", "images/protfilo/alwardah_albaydha/mockup (2).jpg"], "prev": "safeside", "next": "dr-tec"},
+      "dr-tec": {"order": 18, "dateSort": "2023-18-01", "title": "Dr-Tec", "heroImage": "images/protfilo/dr-tec/protfilo.jpg", "description": "UI/UX design and graphic design for Dr-Tec, a technology solutions company. Delivered a modern interface with strong visual branding.", "subDescription": "Combined interface design with a fresh graphic identity.", "tools": ["Figma", "Illustrator"], "date": "2023", "category": "UI/UX Design", "client": "Dr-Tec", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/dr-tec/protfilo.jpg", "images/protfilo/dr-tec/lOGIN.jpg", "images/protfilo/dr-tec/Dashborad.jpg", "images/protfilo/dr-tec/surgery dates.jpg", "images/protfilo/dr-tec/The patients.jpg", "images/protfilo/dr-tec/The patients info.jpg", "images/protfilo/dr-tec/The patients info \u2013 1.jpg", "images/protfilo/dr-tec/Add surgery dates.jpg", "images/protfilo/dr-tec/Add The patients.jpg"], "prev": "alwardah-albaydha", "next": "moed"},
+      "moed": {"order": 19, "dateSort": "2023-19-01", "title": "Teacher Evaluation System", "heroImage": "images/protfilo/feedback-moed/protfilo.jpg", "description": "UX design and full stack development for a Teacher Evaluation System, enabling schools to collect and analyze teacher performance feedback efficiently.", "subDescription": "Built a complete web application with role-based access for teachers, students, and admins.", "tools": ["Figma", "HTML", "CSS", "JS", "PHP", "MySQL"], "date": "2023", "category": "Full Stack Developer", "client": "MOED", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/feedback-moed/protfilo.jpg", "images/protfilo/feedback-moed/homemoed.jpg", "images/protfilo/feedback-moed/state.jpg", "images/protfilo/feedback-moed/teacher.jpg", "images/protfilo/feedback-moed/add.jpg", "images/protfilo/feedback-moed/result1.jpg", "images/protfilo/feedback-moed/result2.jpg", "images/protfilo/feedback-moed/que.jpg", "images/protfilo/feedback-moed/print.jpg"], "prev": "dr-tec", "next": "fatortak"},
+      "fatortak": {"order": 20, "dateSort": "2023-20-01", "title": "Fatortak", "heroImage": "images/protfilo/Fatortak/protfilo.jpg", "description": "UI/UX and graphic design for Fatortak, an invoicing and billing platform. Designed a clean, professional interface that simplifies the invoicing process.", "subDescription": "Created a streamlined user flow from invoice creation to payment tracking.", "tools": ["Figma", "Illustrator"], "date": "2023", "category": "UI/UX Design", "client": "Fatortak", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/Fatortak/protfilo.jpg", "images/protfilo/Fatortak/Homepage (3).jpg", "images/protfilo/Fatortak/Home.jpg", "images/protfilo/Fatortak/Invoices.jpg", "images/protfilo/Fatortak/Services (1).jpg", "images/protfilo/Fatortak/Shop.jpg", "images/protfilo/Fatortak/add.jpg", "images/protfilo/Fatortak/connect.jpg", "images/protfilo/Fatortak/QR.jpg"], "prev": "moed", "next": "smart-rental"},
+      "smart-rental": {"order": 21, "dateSort": "2023-21-01", "title": "Smart Rental", "heroImage": "images/protfilo/Rent/protfilo.jpg", "description": "UI/UX and graphic design for Smart Rental, a property rental platform. Designed an intuitive search and booking experience for renters and landlords.", "subDescription": "Focused on simplifying the rental process through smart UX patterns.", "tools": ["Figma", "Illustrator"], "date": "2023", "category": "UI/UX Design", "client": "Smart Rental", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/Rent/protfilo.jpg", "images/protfilo/Rent/Splach.png", "images/protfilo/Rent/signup.png", "images/protfilo/Rent/home.png", "images/protfilo/Rent/deatils.png", "images/protfilo/Rent/chose.png", "images/protfilo/Rent/Add.png", "images/protfilo/Rent/map.png", "images/protfilo/Rent/mockup.jpg"], "prev": "fatortak", "next": "damascus-jewelry"},
+      "damascus-jewelry": {"order": 22, "dateSort": "2023-22-01", "title": "Damascus Jewelry", "heroImage": "images/protfilo/damajewrlly/protfilo.jpg", "description": "Full stack development for Damascus Jewelry, building a complete e-commerce platform for a luxury jewelry brand.", "subDescription": "Built product catalog, shopping cart, and admin dashboard.", "tools": ["HTML", "CSS", "JS", "PHP", "MySQL"], "date": "2023", "category": "Full Stack Developer", "client": "Damascus Jewelry", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/damajewrlly/protfilo.jpg", "images/protfilo/damajewrlly/homepage.png", "images/protfilo/damajewrlly/new.png", "images/protfilo/damajewrlly/cart.png"], "prev": "smart-rental", "next": "graphic-lab"},
+      "graphic-lab": {"order": 23, "dateSort": "2023-23-01", "title": "Graphic Lab", "heroImage": "images/protfilo/food/protfilo.jpg", "description": "Conceptualized and designed a complete visual identity for a restaurant, showcasing my ability to translate brand vision into cohesive visuals. Independently developed a comprehensive visual identity for a conceptual restaurant.", "subDescription": "Showcased design skills and passion for the hospitality industry.", "tools": ["Illustrator", "Photoshop"], "date": "30, September 2021", "category": "Graphic Design", "client": "Freelance", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/food/protfilo.jpg", "images/protfilo/food/mockup (1).jpg", "images/protfilo/food/mockup (3).jpg", "images/protfilo/food/mockup (2).jpg", "images/protfilo/food/mockup (4).jpg", "images/protfilo/food/mockup (5).jpg", "images/protfilo/food/mockup (6).jpg"], "prev": "damascus-jewelry", "next": "damascus-jewelry-graphic"},
+      "damascus-jewelry-graphic": {"order": 24, "dateSort": "2023-24-01", "title": "Damascus Jewelry Graphic", "heroImage": "images/protfilo/jwerly/protfilo.jpg", "description": "Graphic design for Damascus Jewelry, creating elegant visual materials for marketing and branding of a luxury jewelry brand.", "subDescription": "Designed print and digital assets with a high-end aesthetic.", "tools": ["Illustrator", "Photoshop"], "date": "2023", "category": "Graphic Design", "client": "Damascus Jewelry", "website": {"label": "", "url": ""}, "gallery": ["images/protfilo/jwerly/protfilo.jpg", "images/protfilo/jwerly/re.png", "images/protfilo/jwerly/we.png", "images/protfilo/jwerly/post.jpg"], "prev": "graphic-lab", "next": "hope"}
+    }
+    saveToStorage();
+  }
+}
+
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  localStorage.setItem(STORAGE_KEY + '_version', DATA_VERSION);
+}
+
+// ── Panels ──────────────────────────────────────
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  if (name === 'export') updateCodePreview();
+  if (name === 'overview') renderGrid();
+  if (name === 'blogs-export') updateBlogsCodePreview();
+  if (name === 'blogs-overview') renderBlogsGrid();
+  if (name === 'exp-overview') renderExpList();
+  if (name === 'cred-overview') renderCredGrid();
+  if (name === 'resume-export') updateResumeCodePreview();
+}
+
+// ── Render ──────────────────────────────────────
+function sortedKeys() {
+  return Object.keys(projects).sort(function(a, b) {
+    const oa = projects[a].order === undefined ? -1 : projects[a].order;
+    const ob = projects[b].order === undefined ? -1 : projects[b].order;
+    return oa - ob;
+  });
+}
+
+function renderAll() { renderGrid(); renderSidebarList(); document.getElementById('count-badge').textContent = Object.keys(projects).length; renderBlogsGrid(); renderBlogsSidebarList(); document.getElementById('blogs-count-badge').textContent = Object.keys(blogs).length; }
+
+function renderGrid() {
+  const grid = document.getElementById('projects-grid');
+  const keys = sortedKeys();
+  if (!keys.length) {
+    grid.innerHTML = `<div class="empty-state">📁<p>No projects yet. Add your first one!</p><button class="btn btn-green" onclick="showPanel('add')">+ Add Project</button></div>`;
+    return;
+  }
+  grid.innerHTML = keys.map(key => {
+    const p = projects[key];
+    const thumb = p.heroImage ? `<img src="${p.heroImage}" alt="${p.title}" onerror="this.parentElement.innerHTML='<div class=no-img>🖼</div>'">` : `<div class="no-img">🖼</div>`;
+    return `<div class="project-card" onclick="editProject('${key}')">
+      <div class="card-thumb">${thumb}</div>
+      <div class="card-body">
+        <h3>${p.title}</h3>
+        <div class="card-meta"><span class="tag">${p.category}</span></div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-outline" onclick="event.stopPropagation();editProject('${key}')">✎ Edit</button>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();previewLink('${key}')">Preview ↗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSidebarList() {
+  document.getElementById('sidebar-project-list').innerHTML = sortedKeys().map(key =>
+    `<div class="proj-nav-item" onclick="editProject('${key}')" id="sidebar-item-${key}">
+      <span class="pname">${projects[key].title}</span>
+      <span class="pkey">${key}</span>
+    </div>`
+  ).join('');
+  document.getElementById('count-badge').textContent = Object.keys(projects).length;
+}
+
+// ── Form ──────────────────────────────────────
+function clearForm() {
+  editingKey = null; tools = []; gallery = [];
+  ['f-title','f-key','f-hero','f-description','f-subdesc','f-date','f-datesort','f-category','f-client','f-website-url','f-website-label','f-prev','f-next'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-key').disabled = false;
+  document.getElementById('delete-btn').style.display = 'none';
+  document.getElementById('form-panel-title').textContent = 'Add New Project';
+  renderTools(); renderGallery();
+}
+
+function editProject(key) {
+  clearForm();
+  editingKey = key;
+  const p = projects[key];
+  document.getElementById('f-title').value = p.title;
+  document.getElementById('f-key').value = key;
+  document.getElementById('f-key').disabled = true;
+  document.getElementById('f-hero').value = p.heroImage;
+  document.getElementById('f-description').value = p.description;
+  document.getElementById('f-subdesc').value = p.subDescription || '';
+  document.getElementById('f-date').value = p.date;
+  document.getElementById('f-datesort').value = p.dateSort || '';
+  document.getElementById('f-category').value = p.category;
+  document.getElementById('f-client').value = p.client;
+  document.getElementById('f-website-url').value = p.website?.url || '';
+  document.getElementById('f-website-label').value = p.website?.label || '';
+  document.getElementById('f-prev').value = p.prev || '';
+  document.getElementById('f-next').value = p.next || '';
+  tools = [...(p.tools || [])];
+  gallery = [...(p.gallery || [])];
+  document.getElementById('delete-btn').style.display = 'inline-flex';
+  document.getElementById('form-panel-title').textContent = 'Edit: ' + p.title;
+  renderTools(); renderGallery();
+  showPanel('add');
+}
+
+function saveProject() {
+  const key = editingKey || slugify(document.getElementById('f-key').value.trim() || document.getElementById('f-title').value.trim());
+  const title = document.getElementById('f-title').value.trim();
+  if (!key || !title) { showToast('Title and Key are required.', 'error'); return; }
+  if (!tools.length) { showToast('Add at least one tool.', 'error'); return; }
+  if (!gallery.length) { showToast('Add at least one gallery image.', 'error'); return; }
+  // Keep existing order if editing, assign new order (last) if new project
+  const existingOrder = (editingKey && projects[editingKey] && projects[editingKey].order !== undefined) ? projects[editingKey].order : null;
+  const minOrder = Math.min(0, ...Object.values(projects).map(p => p.order !== undefined ? p.order : 0));
+  projects[key] = {
+    order: existingOrder !== null ? existingOrder : minOrder - 1,
+    title,
+    heroImage: document.getElementById('f-hero').value.trim(),
+    description: document.getElementById('f-description').value.trim(),
+    subDescription: document.getElementById('f-subdesc').value.trim(),
+    tools: [...tools],
+    date: document.getElementById('f-date').value.trim(),
+    category: document.getElementById('f-category').value.trim(),
+    client: document.getElementById('f-client').value.trim(),
+    website: { url: document.getElementById('f-website-url').value.trim(), label: document.getElementById('f-website-label').value.trim() },
+    gallery: [...gallery],
+    prev: document.getElementById('f-prev').value.trim(),
+    next: document.getElementById('f-next').value.trim()
+  };
+  saveToStorage(); renderAll(); showToast('Project saved!', 'success'); clearForm(); showPanel('overview');
+}
+
+function deleteCurrentProject() {
+  if (!editingKey || !confirm(`Delete "${projects[editingKey].title}"?`)) return;
+  delete projects[editingKey];
+  saveToStorage(); renderAll(); showToast('Deleted.', 'success'); clearForm(); showPanel('overview');
+}
+
+function previewLink(key) { window.open(`projects.html?work=${key}`, '_blank'); }
+
+// ── Key slug ──────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('f-title').addEventListener('input', function() {
+    if (!editingKey) { const s = slugify(this.value); document.getElementById('f-key').value = s; document.getElementById('key-preview').textContent = s || '...'; }
+  });
+  document.getElementById('f-key').addEventListener('input', function() { document.getElementById('key-preview').textContent = this.value || '...'; });
+  document.getElementById('bf-title').addEventListener('input', function() {
+    if (!blogEditingKey) { const s = slugify(this.value); document.getElementById('bf-key').value = s; document.getElementById('bkey-preview').textContent = s || '...'; }
+  });
+  document.getElementById('bf-key').addEventListener('input', function() { document.getElementById('bkey-preview').textContent = this.value || '...'; });
+  loadProjects(); loadBlogs(); loadExperiences(); loadCredentials(); renderAll();
+});
+
+function slugify(str) { return str.toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,''); }
+
+// ── Tools ──────────────────────────────────────
+function addTool() { const v = document.getElementById('tool-input').value.trim(); if(!v) return; tools.push(v); document.getElementById('tool-input').value=''; renderTools(); }
+function removeTool(i) { tools.splice(i,1); renderTools(); }
+function renderTools() { document.getElementById('tools-list').innerHTML = tools.map((t,i) => `<span class="tag-item">${t}<button onclick="removeTool(${i})">×</button></span>`).join(''); }
+
+// ── Gallery ──────────────────────────────────────
+function addGalleryItem() { const v = document.getElementById('gallery-input').value.trim(); if(!v) return; gallery.push(v); document.getElementById('gallery-input').value=''; renderGallery(); }
+function removeGalleryItem(i) { gallery.splice(i,1); renderGallery(); }
+function renderGallery() { document.getElementById('gallery-list').innerHTML = gallery.map((g,i) => `<div class="gallery-item"><span>${g}</span><button onclick="removeGalleryItem(${i})">×</button></div>`).join(''); }
+
+// ── Export ──────────────────────────────────────
+function generateDataBlock() {
+  const exportKeys = Object.keys(projects).sort(function(a, b) {
+    const oa = projects[a].order === undefined ? -1 : projects[a].order;
+    const ob = projects[b].order === undefined ? -1 : projects[b].order;
+    return oa - ob;
+  });
+  const arr = exportKeys.map(function(key) {
+    const p = Object.assign({}, projects[key]);
+    delete p.order;
+    p.key = key;
+    const { key: k, ...rest } = p;
+    return { key: k, ...rest };
+  });
+  return 'var worksData = ' + JSON.stringify(arr, null, 2) + ';';
+}
+
+function updateCodePreview() { document.getElementById('code-preview').textContent = generateDataBlock(); }
+
+function downloadTemplate() {
+  const blob = new Blob([generateDataBlock()], { type: 'application/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'works-data.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Downloaded works-data.js — place it in your js/ folder!', 'success');
+}
+
+function copyCode() { navigator.clipboard.writeText(generateDataBlock()).then(() => showToast('Copied!', 'success')); }
+
+// ── Blogs ──────────────────────────────────────
+function loadBlogs() {
+  const saved = localStorage.getItem(BLOGS_STORAGE_KEY);
+  const version = localStorage.getItem(BLOGS_STORAGE_KEY + '_version');
+  if (saved && version === BLOGS_DATA_VERSION) {
+    try { blogs = JSON.parse(saved); } catch(e) { blogs = {}; }
+  } else {
+    blogs = {
+      "dark-pattern": {"order": 1, "dateSort": "2024-01-01", "title": "Dark Pattern UX", "heroImage": "images/blog/DarkPattern/dark.jpg", "description": "Exploring dark patterns in UX design and how they manipulate user behavior.", "subDescription": "A deep dive into deceptive design techniques.", "date": "2024", "category": "UX Research", "author": "Bashar Shaikhani", "file": "dark_pattern.html", "readTime": "5 min read", "prev": "", "next": "business-model-canvas"},
+      "business-model-canvas": {"order": 2, "dateSort": "2024-02-01", "title": "Business Model Canvas", "heroImage": "images/blog/BussinesModel/model.jpg", "description": "Unleashing Team Creativity: Mastering the Business Model Canvas for Collaborative Innovation.", "subDescription": "A guide to using the BMC for strategic planning.", "date": "2024", "category": "Strategy", "author": "Bashar Shaikhani", "file": "business_model_canvas.html", "readTime": "6 min read", "prev": "dark-pattern", "next": "product-research"},
+      "product-research": {"order": 3, "dateSort": "2024-03-01", "title": "Product Research", "heroImage": "images/blog/ProductResearch/research.jpg", "description": "A comprehensive guide to conducting effective product research.", "subDescription": "Methods and frameworks for understanding user needs.", "date": "2024", "category": "UX Research", "author": "Bashar Shaikhani", "file": "product_research.html", "readTime": "7 min read", "prev": "business-model-canvas", "next": ""}
+    };
+    saveBlogsToStorage();
+  }
+}
+
+function saveBlogsToStorage() {
+  localStorage.setItem(BLOGS_STORAGE_KEY, JSON.stringify(blogs));
+  localStorage.setItem(BLOGS_STORAGE_KEY + '_version', BLOGS_DATA_VERSION);
+}
+
+function blogsSortedKeys() {
+  return Object.keys(blogs).sort(function(a, b) {
+    const oa = blogs[a].order === undefined ? -1 : blogs[a].order;
+    const ob = blogs[b].order === undefined ? -1 : blogs[b].order;
+    return oa - ob;
+  });
+}
+
+function renderBlogsGrid() {
+  const grid = document.getElementById('blogs-grid');
+  const keys = blogsSortedKeys();
+  if (!keys.length) {
+    grid.innerHTML = `<div class="empty-state">✦<p>No blogs yet. Add your first one!</p><button class="btn btn-green" onclick="showPanel('blogs-add')">+ Add Blog</button></div>`;
+    return;
+  }
+  grid.innerHTML = keys.map(key => {
+    const b = blogs[key];
+    const thumb = b.heroImage ? `<img src="${b.heroImage}" alt="${b.title}" onerror="this.parentElement.innerHTML='<div class=no-img>✦</div>'">` : `<div class="no-img">✦</div>`;
+    return `<div class="project-card" onclick="editBlog('${key}')">
+      <div class="card-thumb">${thumb}</div>
+      <div class="card-body">
+        <h3>${b.title}</h3>
+        <div class="card-meta"><span class="tag">${b.category}</span>${b.readTime ? `<span class="tag" style="background:rgba(40,233,140,0.08);color:var(--green)">${b.readTime}</span>` : ''}</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-outline" onclick="event.stopPropagation();editBlog('${key}')">✎ Edit</button>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();window.open('blog.html?blog=${key}','_blank')">Preview ↗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderBlogsSidebarList() {
+  document.getElementById('sidebar-blog-list').innerHTML = blogsSortedKeys().map(key =>
+    `<div class="proj-nav-item" onclick="editBlog('${key}')" id="sidebar-blog-item-${key}">
+      <span class="pname">${blogs[key].title}</span>
+      <span class="pkey">${key}</span>
+    </div>`
+  ).join('');
+  document.getElementById('blogs-count-badge').textContent = Object.keys(blogs).length;
+}
+
+function clearBlogForm() {
+  blogEditingKey = null;
+  ['bf-title','bf-key','bf-hero','bf-description','bf-subdesc','bf-date','bf-datesort','bf-category','bf-author','bf-file','bf-readtime','bf-prev','bf-next'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('bf-key').disabled = false;
+  document.getElementById('blog-delete-btn').style.display = 'none';
+  document.getElementById('blog-form-panel-title').textContent = 'Add New Blog';
+}
+
+function editBlog(key) {
+  clearBlogForm();
+  blogEditingKey = key;
+  const b = blogs[key];
+  document.getElementById('bf-title').value = b.title;
+  document.getElementById('bf-key').value = key;
+  document.getElementById('bf-key').disabled = true;
+  document.getElementById('bkey-preview').textContent = key;
+  document.getElementById('bf-hero').value = b.heroImage || '';
+  document.getElementById('bf-description').value = b.description || '';
+  document.getElementById('bf-subdesc').value = b.subDescription || '';
+  document.getElementById('bf-date').value = b.date || '';
+  document.getElementById('bf-datesort').value = b.dateSort || '';
+  document.getElementById('bf-category').value = b.category || '';
+  document.getElementById('bf-author').value = b.author || '';
+  document.getElementById('bf-file').value = b.file || '';
+  document.getElementById('bf-readtime').value = b.readTime || '';
+  document.getElementById('bf-prev').value = b.prev || '';
+  document.getElementById('bf-next').value = b.next || '';
+  document.getElementById('blog-delete-btn').style.display = 'inline-flex';
+  document.getElementById('blog-form-panel-title').textContent = 'Edit: ' + b.title;
+  showPanel('blogs-add');
+}
+
+function saveBlog() {
+  const key = blogEditingKey || slugify(document.getElementById('bf-key').value.trim() || document.getElementById('bf-title').value.trim());
+  const title = document.getElementById('bf-title').value.trim();
+  if (!key || !title) { showToast('Title and Key are required.', 'error'); return; }
+  const existingOrder = (blogEditingKey && blogs[blogEditingKey] && blogs[blogEditingKey].order !== undefined) ? blogs[blogEditingKey].order : null;
+  const minOrder = Math.min(0, ...Object.values(blogs).map(b => b.order !== undefined ? b.order : 0));
+  blogs[key] = {
+    order: existingOrder !== null ? existingOrder : minOrder - 1,
+    title,
+    heroImage: document.getElementById('bf-hero').value.trim(),
+    description: document.getElementById('bf-description').value.trim(),
+    subDescription: document.getElementById('bf-subdesc').value.trim(),
+    date: document.getElementById('bf-date').value.trim(),
+    dateSort: document.getElementById('bf-datesort').value.trim() || new Date().toISOString().split('T')[0],
+    category: document.getElementById('bf-category').value.trim(),
+    author: document.getElementById('bf-author').value.trim(),
+    file: document.getElementById('bf-file').value.trim(),
+    readTime: document.getElementById('bf-readtime').value.trim(),
+    prev: document.getElementById('bf-prev').value.trim(),
+    next: document.getElementById('bf-next').value.trim()
+  };
+  saveBlogsToStorage(); renderAll(); showToast('Blog saved!', 'success'); clearBlogForm(); showPanel('blogs-overview');
+}
+
+function deleteCurrentBlog() {
+  if (!blogEditingKey || !confirm(`Delete "${blogs[blogEditingKey].title}"?`)) return;
+  delete blogs[blogEditingKey];
+  saveBlogsToStorage(); renderAll(); showToast('Deleted.', 'success'); clearBlogForm(); showPanel('blogs-overview');
+}
+
+function generateBlogsDataBlock() {
+  const exportKeys = blogsSortedKeys();
+  const arr = exportKeys.map(function(key) {
+    const b = Object.assign({}, blogs[key]);
+    delete b.order;
+    b.key = key;
+    const { key: k, ...rest } = b;
+    return { key: k, ...rest };
+  });
+  return 'var blogsData = ' + JSON.stringify(arr, null, 2) + ';';
+}
+
+function updateBlogsCodePreview() { document.getElementById('blogs-code-preview').textContent = generateBlogsDataBlock(); }
+
+function downloadBlogsTemplate() {
+  const blob = new Blob([generateBlogsDataBlock()], { type: 'application/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'blogs-data.js';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Downloaded blogs-data.js!', 'success');
+}
+
+function copyBlogsCode() { navigator.clipboard.writeText(generateBlogsDataBlock()).then(() => showToast('Copied!', 'success')); }
+
+
+// ══════════════════════════════════════════════
+// ── EXPERIENCE ─────────────────────────────────
+// ══════════════════════════════════════════════
+let experiences = [];
+let editingExpIdx = null;
+const EXP_STORAGE_KEY = 'bashar_portfolio_experience';
+
+function loadExperiences() {
+  const saved = localStorage.getItem(EXP_STORAGE_KEY);
+  if (saved) { try { experiences = JSON.parse(saved); } catch(e) { experiences = []; } }
+  else { experiences = [
+    { order:1, badge:'Most Recent', title:'Director of Design & Programming Department', company:'UPN', type:'Full-Time · Remote', location:'Kuwait', start:'Dec 2024', end:'Apr 2025', tags:['Leadership','UI/UX','Agile','Product'], bullets:['Led design and development teams to deliver digital products on time and within budget.','Defined and implemented the department\'s strategic vision aligned with company goals.','Ran Agile lifecycles with sprint planning, stand-ups, reviews, and retrospectives.','Reported project progress and roadmaps to senior leadership and stakeholders.'], role1:'', bullets2:[], role2:'', bullets3:[] },
+    { order:2, badge:'', title:'Product Researcher & Graphic Designer', company:'TechnozLeader', type:'Full-Time · Remote', location:'Türkiye', start:'Aug 2023', end:'Dec 2024', tags:['AI Research','Product Strategy','Graphic Design','Blender'], bullets:[], role1:'As a Product Researcher:', bullets2:['Built a custom AI Chatbot using ChatGPT 4; contributed to "Techy" AI assistant.','Conducted competitive analysis, market research, and business model canvas creation.','Performed UX studies: personas, journey maps, SWOT analysis, flow charts.'], role2:'As a Graphic Designer:', bullets3:['Created company character "Techy" using Blender; produced animated elements with Rive & Lottie.','Designed social media posts, videos, and company documents.'] },
+    { order:3, badge:'', title:'Graphic Designer & Full-stack Developer', company:'BayArea Qatar', type:'Freelance', location:'Qatar', start:'Nov 2023', end:'Feb 2024', tags:['Full-Stack','PHP','MySQL','Brand Identity'], bullets:['Built the BayArea Qatar website: HTML · CSS · JS · Bootstrap · PHP · MySQL.','Developed a full-access admin dashboard and managed cPanel hosting.','Formulated dynamic visual identities and comprehensive design solutions.'], role1:'', bullets2:[], role2:'', bullets3:[] },
+    { order:4, badge:'', title:'Team Manager & Full-stack Developer', company:'A2Z', type:'On-Site', location:'', start:'Feb 2022', end:'Jun 2023', tags:['Team Lead','Full-Stack','SEO','cPanel'], bullets:['Set team goals, scheduled tasks, and monitored performance.','Developed user-friendly interfaces using HTML · CSS · JS · PHP · MySQL.','Developed HTML SEO optimization strategies.'], role1:'', bullets2:[], role2:'', bullets3:[] },
+    { order:5, badge:'', title:'Full-stack Developer', company:'Syrian Ministry of Education', type:'On-Site · Part-Time', location:'', start:'Aug 2022', end:'Dec 2022', tags:['Government','Role-Based Access','Encryption','PHP'], bullets:['Built an internal teacher evaluation platform used across schools in Syria.','Implemented role-based access: SuperAdmin · Admin · SuperGuide · Guide.','Secured sensitive data with encryption and entry verification systems.'], role1:'', bullets2:[], role2:'', bullets3:[] },
+    { order:6, badge:'', title:'UI/UX Designer & Graphic Designer', company:'SamaSoft', type:'Full-Time · Remote', location:'Jordan', start:'Mar 2021', end:'Feb 2022', tags:['UI/UX','User Research','Figma','Branding'], bullets:['Conducted user research and created personas, flows, and journey maps.','Designed wireframes, mockups, and prototypes for digital interfaces.','Ran usability testing and iterated on designs based on feedback.'], role1:'', bullets2:[], role2:'', bullets3:[] },
+    { order:7, badge:'', title:'Graphic Designer', company:'Mostaql', type:'Freelance', location:'', start:'Mar 2020', end:'Aug 2022', tags:['Freelance','Graphic Design','Client Work'], bullets:['Understood and executed client design requirements with precision.','Developed design concepts aligned with client briefs on time.','Maintained ongoing feedback loops and high client satisfaction.'], role1:'', bullets2:[], role2:'', bullets3:[] }
+  ]; saveExperiencesToStorage(); }
+  updateExpBadge();
+}
+
+function saveExperiencesToStorage() { localStorage.setItem(EXP_STORAGE_KEY, JSON.stringify(experiences)); }
+
+function updateExpBadge() { document.getElementById('exp-count-badge').textContent = experiences.length; }
+
+function renderExpList() {
+  const el = document.getElementById('exp-list');
+  if (!experiences.length) { el.innerHTML = `<div class="empty-state">📋<p>No experience yet.</p><button class="btn btn-green" onclick="showPanel('exp-add'); clearExpForm();">+ Add Experience</button></div>`; return; }
+  const sorted = [...experiences].sort((a,b) => (a.order||0)-(b.order||0));
+  el.innerHTML = sorted.map((e, i) => {
+    const realIdx = experiences.indexOf(e);
+    return `<div class="form-card" style="cursor:pointer;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;" onclick="editExp(${realIdx})">
+      <div style="flex:1;min-width:0;">
+        ${e.badge ? `<span style="font-size:10px;font-weight:700;color:var(--green);background:var(--green-dim);border:1px solid var(--green-border);border-radius:20px;padding:2px 10px;margin-bottom:6px;display:inline-block;">${e.badge}</span>` : ''}
+        <div style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px;">${e.title}</div>
+        <div style="font-size:12px;color:var(--text-muted);">${e.company}${e.type ? ' · ' + e.type : ''}${e.location ? ' · ' + e.location : ''}</div>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);white-space:nowrap;text-align:right;">
+        <div>${e.start} → ${e.end || 'Present'}</div>
+        <div style="margin-top:4px;color:var(--text-muted);">Order: ${e.order||'—'}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button class="btn btn-outline" onclick="event.stopPropagation();editExp(${realIdx})">✎ Edit</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearExpForm() {
+  editingExpIdx = null;
+  ['ef-title','ef-company','ef-type','ef-location','ef-start','ef-end','ef-badge','ef-tags','ef-bullets','ef-role1','ef-bullets2','ef-role2','ef-bullets3'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('ef-order').value = '';
+  document.getElementById('exp-delete-btn').style.display = 'none';
+  document.getElementById('exp-form-title').textContent = 'Add Experience';
+}
+
+function editExp(idx) {
+  const e = experiences[idx];
+  editingExpIdx = idx;
+  document.getElementById('ef-title').value = e.title || '';
+  document.getElementById('ef-company').value = e.company || '';
+  document.getElementById('ef-type').value = e.type || '';
+  document.getElementById('ef-location').value = e.location || '';
+  document.getElementById('ef-start').value = e.start || '';
+  document.getElementById('ef-end').value = e.end || '';
+  document.getElementById('ef-badge').value = e.badge || '';
+  document.getElementById('ef-tags').value = (e.tags||[]).join(', ');
+  document.getElementById('ef-bullets').value = (e.bullets||[]).join('\n');
+  document.getElementById('ef-role1').value = e.role1 || '';
+  document.getElementById('ef-bullets2').value = (e.bullets2||[]).join('\n');
+  document.getElementById('ef-role2').value = e.role2 || '';
+  document.getElementById('ef-bullets3').value = (e.bullets3||[]).join('\n');
+  document.getElementById('ef-order').value = e.order || '';
+  document.getElementById('exp-delete-btn').style.display = 'inline-flex';
+  document.getElementById('exp-form-title').textContent = 'Edit: ' + e.title;
+  showPanel('exp-add');
+}
+
+function saveExp() {
+  const title = document.getElementById('ef-title').value.trim();
+  const company = document.getElementById('ef-company').value.trim();
+  if (!title || !company) { showToast('Title and Company are required.', 'error'); return; }
+  const entry = {
+    order: parseInt(document.getElementById('ef-order').value) || (experiences.length + 1),
+    badge: document.getElementById('ef-badge').value.trim(),
+    title, company,
+    type: document.getElementById('ef-type').value.trim(),
+    location: document.getElementById('ef-location').value.trim(),
+    start: document.getElementById('ef-start').value.trim(),
+    end: document.getElementById('ef-end').value.trim(),
+    tags: document.getElementById('ef-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    bullets: document.getElementById('ef-bullets').value.split('\n').map(t=>t.trim()).filter(Boolean),
+    role1: document.getElementById('ef-role1').value.trim(),
+    bullets2: document.getElementById('ef-bullets2').value.split('\n').map(t=>t.trim()).filter(Boolean),
+    role2: document.getElementById('ef-role2').value.trim(),
+    bullets3: document.getElementById('ef-bullets3').value.split('\n').map(t=>t.trim()).filter(Boolean),
+  };
+  if (editingExpIdx !== null) { experiences[editingExpIdx] = entry; }
+  else { experiences.push(entry); }
+  saveExperiencesToStorage(); updateExpBadge();
+  showToast('Experience saved!', 'success'); clearExpForm(); showPanel('exp-overview'); renderExpList();
+}
+
+function deleteCurrentExp() {
+  if (editingExpIdx === null || !confirm(`Delete "${experiences[editingExpIdx].title}"?`)) return;
+  experiences.splice(editingExpIdx, 1);
+  saveExperiencesToStorage(); updateExpBadge();
+  showToast('Deleted.', 'success'); clearExpForm(); showPanel('exp-overview'); renderExpList();
+}
+
+// ══════════════════════════════════════════════
+// ── CREDENTIALS ────────────────────────────────
+// ══════════════════════════════════════════════
+let credentials = [];
+let editingCredIdx = null;
+const CRED_STORAGE_KEY = 'bashar_portfolio_credentials';
+
+function loadCredentials() {
+  const saved = localStorage.getItem(CRED_STORAGE_KEY);
+  if (saved) { try { credentials = JSON.parse(saved); } catch(e) { credentials = []; } }
+  else { credentials = [
+    { order:1, cat:'degree', img:'images/cerf/spu.jpg', badge:'Degree', title:'B.Sc. Informatics Engineering', sub:'Software Engineering', org:'Syrian Private University', date:'2018 – 2023', desc:'5-year program covering software engineering, algorithms, databases & system design. Graduation project scored 100/100 — first multi-insurance platform in Syria.', url:'' },
+    { order:2, cat:'design', img:'images/cerf/Adobe_Graphic_Designer.jpg', badge:'Certificate', title:'Adobe Graphic Designer Specialization', sub:'5 Courses', org:'Adobe · Via Coursera', date:'Jan – Mar 2025', desc:'Design Fundamentals · Generative AI · Image Editing · Graphic Design · Document Design', url:'https://coursera.org/share/a94e037c9ad30a22c1da17673604cfc9' },
+    { order:3, cat:'product', img:'images/cerf/IBM_Product_Manager.jpg', badge:'Certificate', title:'IBM Product Manager', sub:'6 Courses', org:'IBM & SkillUp EdTech · Via Coursera', date:'Apr – Jul 2024', desc:'Product Strategy · Agile & Scrum · Stakeholder Collaboration · New Product Development · Capstone', url:'https://coursera.org/share/4c1974a7e14f48961cbab65de014b30b' },
+    { order:4, cat:'design', img:'images/cerf/google_ux.jpeg', badge:'Certificate', title:'Google UX Design Specialization', sub:'7 Courses', org:'Google · Via Coursera', date:'Jan – Mar 2024', desc:'UX Foundations · Wireframes · Prototypes in Figma · UX Research · High-Fidelity Designs · Social Good UX', url:'https://www.coursera.org/account/accomplishments/specialization/LHQNP3B98TL5' },
+    { order:5, cat:'product', img:'images/cerf/bussines_model.jpeg', badge:'Certificate', title:'Business Model Canvas', sub:'Entrepreneurs & Innovators', org:'University of Georgia · Via Coursera', date:'Feb – Mar 2024', desc:'Customer Segments · Value Proposition · Revenue Streams · Key Partners · Cost Structure', url:'https://www.coursera.org/account/accomplishments/verify/W66KSHHZTTZS' },
+    { order:6, cat:'product', img:'images/cerf/AcademicThinking.jpg', badge:'Certificate', title:'English Academic Thinking (B2)', sub:'Critical Analysis', org:'Arizona State University · Education for Humanity', date:'Apr – Jun 2024', desc:'Writer\'s purpose & bias · Fact vs opinion · Argument weaknesses · Evidence-based tasks', url:'https://badgr.com/public/assertions/CsP-3cUaQRyeEgl-Wzmy8Q' },
+    { order:7, cat:'dev', img:'images/cerf/react.jpg', badge:'Certificate', title:'React JavaScript', sub:'Frontend Framework', org:'New Horizons', date:'Aug – Oct 2023', desc:'Component architecture · React Hooks · State management · ES6+ · Async data handling', url:'' },
+    { order:8, cat:'award', img:'images/cerf/moed.jpg', badge:'Award', title:'Letter of Thanks', sub:'Official Recognition', org:'Syrian Ministry of Education', date:'Nov 2022', desc:'Awarded for developing an internal teacher evaluation platform deployed across schools in Syria — featuring role-based access and data encryption.', url:'' },
+    { order:9, cat:'dev', img:'images/cerf/flutter.jpg', badge:'Certificate', title:'Flutter Developer', sub:'Cross-Platform Mobile', org:'Ousos', date:'Apr – Sep 2020', desc:'Flutter framework · Responsive UI with widgets · State management · Published to Android & iOS', url:'' },
+    { order:10, cat:'dev', img:'images/cerf/php.jpg', badge:'Certificate', title:'Certified PHP Engineer', sub:'Backend Development', org:'Shiyar Academy', date:'Jan – May 2020', desc:'PHP · MySQL · Dynamic web applications · Git version control · Backend architecture', url:'' },
+  ]; saveCredentialsToStorage(); }
+  updateCredBadge();
+}
+
+function saveCredentialsToStorage() { localStorage.setItem(CRED_STORAGE_KEY, JSON.stringify(credentials)); }
+
+function updateCredBadge() { document.getElementById('cred-count-badge').textContent = credentials.length; }
+
+function renderCredGrid() {
+  const grid = document.getElementById('cred-grid');
+  if (!credentials.length) { grid.innerHTML = `<div class="empty-state">🎓<p>No credentials yet.</p><button class="btn btn-green" onclick="showPanel('cred-add'); clearCredForm();">+ Add Credential</button></div>`; return; }
+  const sorted = [...credentials].sort((a,b)=>(a.order||0)-(b.order||0));
+  const badgeClass = { degree:'', design:'', dev:'', product:'', award:'' };
+  grid.innerHTML = sorted.map((c) => {
+    const realIdx = credentials.indexOf(c);
+    const thumb = c.img ? `<img src="${c.img}" alt="${c.title}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div class=no-img>🎓</div>'">` : `<div class="no-img">🎓</div>`;
+    return `<div class="project-card" onclick="editCred(${realIdx})">
+      <div class="card-thumb">${thumb}</div>
+      <div class="card-body">
+        <h3>${c.title}</h3>
+        <div class="card-meta"><span class="tag">${c.cat}</span><span style="font-size:11px;color:var(--text-muted);margin-left:6px;">${c.date||''}</span></div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-outline" onclick="event.stopPropagation();editCred(${realIdx})">✎ Edit</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearCredForm() {
+  editingCredIdx = null;
+  ['cf-title','cf-sub','cf-org','cf-date','cf-img','cf-desc','cf-url'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cf-order').value = '';
+  document.getElementById('cf-cat').value = 'design';
+  document.getElementById('cred-delete-btn').style.display = 'none';
+  document.getElementById('cred-form-title').textContent = 'Add Credential';
+}
+
+function editCred(idx) {
+  const c = credentials[idx];
+  editingCredIdx = idx;
+  document.getElementById('cf-title').value = c.title || '';
+  document.getElementById('cf-sub').value = c.sub || '';
+  document.getElementById('cf-org').value = c.org || '';
+  document.getElementById('cf-date').value = c.date || '';
+  document.getElementById('cf-cat').value = c.cat || 'design';
+  document.getElementById('cf-img').value = c.img || '';
+  document.getElementById('cf-desc').value = c.desc || '';
+  document.getElementById('cf-url').value = c.url || '';
+  document.getElementById('cf-order').value = c.order || '';
+  document.getElementById('cred-delete-btn').style.display = 'inline-flex';
+  document.getElementById('cred-form-title').textContent = 'Edit: ' + c.title;
+  showPanel('cred-add');
+}
+
+function saveCred() {
+  const title = document.getElementById('cf-title').value.trim();
+  const org = document.getElementById('cf-org').value.trim();
+  if (!title || !org) { showToast('Title and Organisation are required.', 'error'); return; }
+  const entry = {
+    order: parseInt(document.getElementById('cf-order').value) || (credentials.length + 1),
+    cat: document.getElementById('cf-cat').value,
+    img: document.getElementById('cf-img').value.trim(),
+    badge: { degree:'Degree', design:'Certificate', dev:'Certificate', product:'Certificate', award:'Award' }[document.getElementById('cf-cat').value] || 'Certificate',
+    title, sub: document.getElementById('cf-sub').value.trim(),
+    org, date: document.getElementById('cf-date').value.trim(),
+    desc: document.getElementById('cf-desc').value.trim(),
+    url: document.getElementById('cf-url').value.trim(),
+  };
+  if (editingCredIdx !== null) { credentials[editingCredIdx] = entry; }
+  else { credentials.push(entry); }
+  saveCredentialsToStorage(); updateCredBadge();
+  showToast('Credential saved!', 'success'); clearCredForm(); showPanel('cred-overview'); renderCredGrid();
+}
+
+function deleteCurrentCred() {
+  if (editingCredIdx === null || !confirm(`Delete "${credentials[editingCredIdx].title}"?`)) return;
+  credentials.splice(editingCredIdx, 1);
+  saveCredentialsToStorage(); updateCredBadge();
+  showToast('Deleted.', 'success'); clearCredForm(); showPanel('cred-overview'); renderCredGrid();
+}
+
+// ── Resume Export ───────────────────────────────
+function generateResumeDataBlock() {
+  const expSorted = [...experiences].sort((a,b)=>(a.order||0)-(b.order||0)).map(e=>{ const {order,...r}=e; return r; });
+  const credSorted = [...credentials].sort((a,b)=>(a.order||0)-(b.order||0)).map(c=>{ const {order,...r}=c; return r; });
+  return 'var experienceData = ' + JSON.stringify(expSorted, null, 2) + ';\n\nvar credentialsData = ' + JSON.stringify(credSorted, null, 2) + ';';
+}
+
+function updateResumeCodePreview() { document.getElementById('resume-code-preview').textContent = generateResumeDataBlock(); }
+
+function downloadResumeData() {
+  const blob = new Blob([generateResumeDataBlock()], { type: 'application/javascript' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'resume-data.js'; a.click(); URL.revokeObjectURL(a.href);
+  showToast('Downloaded resume-data.js!', 'success');
+}
+
+function copyResumeCode() { navigator.clipboard.writeText(generateResumeDataBlock()).then(() => showToast('Copied!', 'success')); }
+
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = (type==='success'?'✓ ':'✕ ') + msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>
