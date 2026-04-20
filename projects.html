@@ -820,7 +820,8 @@
             var galleryImages = work.gallery;
             var galleryHTML = '';
             galleryImages.forEach(function(img, i) {
-                galleryHTML += '<div class="col-12 mb-30"><div class="img" onclick="openLightbox(' + i + ')"><div class="img-skeleton"></div><img src="' + img + '" alt="' + work.title + ' ' + (i+1) + '" onload="this.classList.add(\'img-loaded\');var sk=this.previousElementSibling;if(sk&&sk.classList.contains(\'img-skeleton\')){sk.classList.add(\'hidden\');var _s=sk;setTimeout(function(){_s.remove();},400);}"></div></div>';
+                var mb = (i % 2 === 0) ? 'sm-mb30' : '';
+                galleryHTML += '<div class="col-md-6 mb-30"><div class="img ' + mb + '" onclick="openLightbox(' + i + ')"><div class="img-skeleton"></div><img src="' + img + '" alt="' + work.title + ' ' + (i+1) + '" onload="this.classList.add(\'img-loaded\');var sk=this.previousElementSibling;if(sk&&sk.classList.contains(\'img-skeleton\')){sk.classList.add(\'hidden\');var _s=sk;setTimeout(function(){_s.remove();},400);}"></div></div>';
             });
             document.getElementById('work-gallery').innerHTML = galleryHTML;
 
