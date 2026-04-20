@@ -72,9 +72,6 @@
         }
         /* gallery skeleton */
         #work-gallery .img { position: relative; }
-        #work-gallery .img .img-skeleton { border-radius: 10px; }
-        #work-gallery img { opacity: 0; transition: opacity .4s ease; }
-        #work-gallery img.img-loaded { opacity: 1; }
         .proj-hero-overlay {
             position: absolute;
             inset: 0;
@@ -821,7 +818,7 @@
             var galleryHTML = '';
             galleryImages.forEach(function(img, i) {
                 var mb = (i % 2 === 0) ? 'sm-mb30' : '';
-                galleryHTML += '<div class="col-md-6 mb-30"><div class="img ' + mb + '" onclick="openLightbox(' + i + ')"><div class="img-skeleton"></div><img src="' + img + '" alt="' + work.title + ' ' + (i+1) + '" onload="this.classList.add(\'img-loaded\');var sk=this.previousElementSibling;if(sk&&sk.classList.contains(\'img-skeleton\')){sk.classList.add(\'hidden\');var _s=sk;setTimeout(function(){_s.remove();},400);}"></div></div>';
+                galleryHTML += '<div class="col-md-6 mb-30"><div class="img ' + mb + '" onclick="openLightbox(' + i + ')"><img src="' + img + '" alt="' + work.title + ' ' + (i+1) + '"></div></div>';
             });
             document.getElementById('work-gallery').innerHTML = galleryHTML;
 
