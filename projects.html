@@ -71,9 +71,10 @@
             100% { background-position: -200% 0; }
         }
         /* gallery skeleton */
-        #work-gallery .img { position: relative; min-height: 240px; background: #1a1a1a; }
-        #work-gallery .img .img-skeleton { position:absolute; inset:0; border-radius:10px; z-index:1; }
-        #work-gallery .img img { position: relative; z-index: 2; display: block; width: 100%; }
+        #work-gallery .img { position: relative; border-radius: 10px; overflow: hidden; background: #1a1a1a; aspect-ratio: 4/3; }
+        #work-gallery .img .img-skeleton { position: absolute; inset: 0; border-radius: 10px; z-index: 1; transition: opacity .4s ease; }
+        #work-gallery .img img { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s ease; }
+        #work-gallery .img img.img-loaded { opacity: 1; }
         .proj-hero-overlay {
             position: absolute;
             inset: 0;
@@ -820,12 +821,12 @@
             var galleryHTML = '';
             galleryImages.forEach(function(img, i) {
                 var mb = (i % 2 === 0) ? 'sm-mb30' : '';
-                galleryHTML += '<div class="col-md-6 mb-30"><div class="img ' + mb + '" onclick="openLightbox(' + i + ')"><div class="img-skeleton"></div><img src="' + img + '" alt="' + work.title + ' ' + (i+1) + '" style="opacity:0;transition:opacity .4s ease;"></div></div>';
+                galleryHTML += '<div class="col-md-6 mb-30"><div class="img ' + mb + '" onclick="openLightbox(' + i + ')"><div class="img-skeleton"></div><img src="' + img + '" alt="' + work.title + ' ' + (i+1) + '"></div></div>';
             });
             document.getElementById('work-gallery').innerHTML = galleryHTML;
             document.querySelectorAll('#work-gallery .img img').forEach(function(img) {
                 function reveal() {
-                    img.style.opacity = 1;
+                    img.classList.add('img-loaded');
                     var sk = img.previousElementSibling;
                     if (sk && sk.classList.contains('img-skeleton')) {
                         sk.style.opacity = 0;
