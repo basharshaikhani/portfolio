@@ -25,9 +25,21 @@
         .navbar .bg { background: none !important; backdrop-filter: none !important; }
         .proj-hero-wrap {
             position: relative;
+            border-radius: 14px;
+            margin-bottom: 40px;
+            padding: 3px;
+            background: linear-gradient(135deg, #28e98c, #5b6af0, #28e98c, #ff8c42);
+            background-size: 300% 300%;
+            animation: heroShimmer 4s ease infinite;
+        }
+        @keyframes heroShimmer {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .proj-hero-wrap__inner {
             overflow: hidden;
             border-radius: 12px;
-            margin-bottom: 80px;
         }
         .proj-hero-wrap img {
             width: 100%;
@@ -193,6 +205,7 @@
         #work-gallery img {
             border-radius: 10px;
             width: 100%;
+            height: auto;
             display: block;
             transform: scale(1.03);
             transition: transform .6s cubic-bezier(.22,1,.36,1), box-shadow .3s;
@@ -581,8 +594,10 @@
 
                         <!-- Hero Image -->
                         <div class="proj-hero-wrap fade-up">
-                            <img id="work-hero" src="" alt="">
-                            <div class="proj-hero-overlay"></div>
+                            <div class="proj-hero-wrap__inner">
+                                <img id="work-hero" src="" alt="">
+                                <div class="proj-hero-overlay"></div>
+                            </div>
                         </div>
 
                         <div class="row">
