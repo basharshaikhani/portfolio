@@ -40,15 +40,41 @@
         .proj-hero-wrap__inner {
             overflow: hidden;
             border-radius: 12px;
+            position: relative;
         }
         .proj-hero-wrap img {
             width: 100%;
             display: block;
             border-radius: 12px;
             transform: scale(1.04);
-            transition: transform 1.2s cubic-bezier(.22,1,.36,1);
+            transition: transform 1.2s cubic-bezier(.22,1,.36,1), opacity .4s ease;
+            opacity: 0;
         }
+        .proj-hero-wrap img.img-loaded { opacity: 1; }
         .proj-hero-wrap.revealed img { transform: scale(1); }
+
+        /* ── Skeleton shimmer ── */
+        .img-skeleton {
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #1a1a1a 25%, #252525 50%, #1a1a1a 75%);
+            background-size: 200% 100%;
+            animation: skeletonSweep 1.4s ease infinite;
+            transition: opacity .4s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .img-skeleton.hidden { opacity: 0; }
+        @keyframes skeletonSweep {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        /* gallery skeleton */
+        #work-gallery .img { position: relative; }
+        #work-gallery .img .img-skeleton { border-radius: 10px; }
+        #work-gallery img { opacity: 0; transition: opacity .4s ease; }
+        #work-gallery img.img-loaded { opacity: 1; }
         .proj-hero-overlay {
             position: absolute;
             inset: 0;
@@ -595,6 +621,7 @@
                         <!-- Hero Image -->
                         <div class="proj-hero-wrap fade-up">
                             <div class="proj-hero-wrap__inner">
+                                <div class="img-skeleton" id="hero-skeleton"></div>
                                 <img id="work-hero" src="" alt="">
                                 <div class="proj-hero-overlay"></div>
                             </div>
@@ -710,8 +737,17 @@
             document.getElementById('page-title').textContent = work.title;
             document.getElementById('breadcrumb-title').textContent = work.title;
             document.getElementById('work-title-card').textContent = work.title;
-            document.getElementById('work-hero').src = work.heroImage;
-            document.getElementById('work-hero').alt = work.title;
+            // ── Hero skeleton reveal ──
+            var heroImg = document.getElementById('work-hero');
+            heroImg.src = work.heroImage;
+            heroImg.alt = work.title;
+            function revealHero() {
+                heroImg.classList.add('img-loaded');
+                var sk = document.getElementById('hero-skeleton');
+                if (sk) { sk.classList.add('hidden'); setTimeout(function(){ sk.remove(); }, 400); }
+            }
+            if (heroImg.complete && heroImg.naturalWidth) { revealHero(); }
+            else { heroImg.addEventListener('load', revealHero); }
             document.getElementById('work-title').textContent = work.title;
             document.getElementById('work-description').textContent = work.description;
             document.getElementById('work-sub-description').textContent = work.subDescription;
@@ -785,7 +821,7 @@
             var galleryHTML = '';
             galleryImages.forEach(function(img, i) {
                 var mb = (i % 2 === 0) ? 'sm-mb30' : '';
-                galleryHTML += '<div class="col-md-6 mb-30"><div class="img ' + mb + '" onclick="openLightbox(' + i + ')"><img src="' + img + '" alt="' + work.title + ' ' + (i+1) + '" loading="lazy"></div></div>';
+                galleryHTML += '<div class="col-md-6 mb-30"><div class="img ' + mb + '" onclick="openLightbox(' + i + ')"><div class="img-skeleton"></div><img src="' + img + '" alt="' + work.title + ' ' + (i+1) + '" loading="lazy" onload="this.classList.add(\'img-loaded\');var sk=this.previousElementSibling;if(sk&&sk.classList.contains(\'img-skeleton\')){sk.classList.add(\'hidden\');var _s=sk;setTimeout(function(){_s.remove();},400);}"></div></div>';
             });
             document.getElementById('work-gallery').innerHTML = galleryHTML;
 
